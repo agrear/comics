@@ -8,7 +8,8 @@
   "description": "Web comic reader",
   "main": "public/electron.js",
   "build": {
-    "appId": "comics.reader"
+    "appId": "comics.reader",
+    "artifactName": "${name}-${version}-${os}-${arch}-setup.${ext}"
   },
   "homepage": "./",
   "private": true,
