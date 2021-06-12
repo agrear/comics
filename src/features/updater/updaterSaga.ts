@@ -45,6 +45,7 @@ import { imageRemoved } from '../comic/imageSlice';
 import { selectLastComicViewed } from '../history/historySlice';
 import {
   findIndexLevenshtein,
+  filterByLevenshteinDistance,
   getFutureDate,
   hobohm,
   sortByLevenshteinScore
@@ -239,14 +240,49 @@ function* fetchPreviousWebpage(comicId: EntityId, page?: Page) {
   }
 }
 
-function getSortedCluster(url: string, urls: string[]) {
-  const clusters = hobohm([url, ...urls]);
+function getSortedCluster(url: string, urls: string[], threshold?: number) {
+  const clusters = hobohm([url, ...urls], threshold);
 
-  // First cluster contains url
+  // First cluster contains search URL
   const cluster = clusters[0];
   cluster.splice(0, 1);  // Which we remove
 
   return sortByLevenshteinScore(url, cluster);
+}
+
+function findNextLink(searchUrl: string, webpage: Webpage) {
+  const threshold = 0.9;
+  const indices = filterByLevenshteinDistance(
+    searchUrl,
+    webpage.links.map(({ href }) => href),
+    threshold
+  );
+
+  const maxSimilarity = Math.max(
+    ...indices.map(({ similarity }) => similarity)
+  );
+
+  // Pick longest link from links with max similarity
+  let nextLink = indices.filter(({ similarity }) => (
+    similarity >= maxSimilarity
+  )).map(({ index }) => (
+    webpage.links[index]
+  )).reduce((longest, next) => {
+    const length = stringifyLink(next).length;
+    return length > longest.length ? { link: next, length } : longest;
+  }, { link: null as (Link | null), length: 0 }
+  ).link;
+
+  if (nextLink === null) {  // Pick best match
+    nextLink = webpage.links[
+      findIndexLevenshtein(
+        searchUrl,
+        webpage.links.map(({ href }) => href)
+      )
+    ];
+  }
+
+  return nextLink;
 }
 
 function* fetchNextWebpage(
@@ -261,17 +297,13 @@ function* fetchNextWebpage(
     // Cluster links by current URL and sort by score
     const links = current.links.map(({ href }) => href);
     urls = getSortedCluster(current.url, links);
-  } else {  // Find next link on previous page
-    const nextLink = stringifyLink(
-      previous.links[findIndexLevenshtein(
-        current.url,
-        previous.links.map(({ href }) => href)
-      )]
-    );
+  } else {
+    // Find 'next' link on previous page
+    const nextLink = findNextLink(current.url, previous);
 
-    // Sort URLs on current page by best match to next link
+    // Sort URLs on current page by best match to 'next' link
     const links = current.links.map(stringifyLink);
-    urls = getSortedCluster(nextLink, links).map(link => {
+    urls = getSortedCluster(stringifyLink(nextLink), links).map(link => {
       const start = link.indexOf('href="');
       const end = link.indexOf('"', start + 6);
 

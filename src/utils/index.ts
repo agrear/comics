@@ -229,8 +229,19 @@ export function sortByLevenshteinScore(s: string, strings: string[]) {
 }
 
 export function findIndexLevenshtein(searchTerm: string, list: string[]) {
-  return list.reduce((accumulator, item, i) => {
-    const score = levenshtein(searchTerm, item);
-    return score < accumulator.score ? { score, index: i } : accumulator;
-  }, { score: Infinity, index: -1 }).index;
+  return list.reduce((lowest, item, i) => {
+    const distance = levenshtein(searchTerm, item);
+    return distance < lowest.distance ? { distance, index: i } : lowest;
+  }, { distance: Infinity, index: -1 }).index;
+}
+
+export function filterByLevenshteinDistance(
+  searchTerm: string,
+  list: string[],
+  threshold = 0.62
+) {
+  return list.map((item, i) => ({
+    similarity: 1 - levenshtein(searchTerm, item) / Math.max(1, item.length),
+    index: i
+  })).filter(({ similarity, index }) => similarity >= threshold);
 }
