@@ -236,27 +236,7 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
         range: Math.floor(windowSize / 2)
       }));
     }
-  }, [comic.id, dispatch, selectedIndex, windowSize]);
-
-  // Update scrollbar on drag
-  /*React.useEffect(() => {
-    function updateView(value: number) {
-      const percentage = value / -dragDistance;
-      scrollY.set(percentage * scrollbarHeight);
-    }
-
-    return y.onChange(updateView);
-  }, [dragDistance, scrollY, scrollbarHeight, y]);
-
-  // Update list view when scrolling
-  React.useEffect(() => {
-    function updateList(value: number) {
-      const percentage = 1 - value / scrollbarHeight;
-      y.set(percentage * -dragDistance);
-    }
-
-    return scrollY.onChange(updateList);
-  }, [dragDistance, scrollY, scrollbarHeight, y]);*/
+  }, [comic.id, comic.pages, dispatch, selectedIndex, windowSize]);
 
   return (
     <>
