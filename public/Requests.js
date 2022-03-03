@@ -62,7 +62,7 @@ class Requests {
       //http2: true,  // HTTP2 is still buggy
       timeout: 15000,
       headers: {
-        'user-agent': `comics/${app.getVersion()} (https://github.com/agrear)`
+        'user-agent': `comics/${app.getVersion()} (https://github.com/agrear/comics)`
       }
     };
 
