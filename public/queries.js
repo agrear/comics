@@ -306,7 +306,7 @@ function createPreparedStatements(db) {
         data: Buffer.from(cover_data)
       },
       bookmark,
-      created: new toDate(created),
+      created: toDate(created),
       accessed: accessed && toDate(accessed),
       updated: updated && toDate(updated),
       brightness,
