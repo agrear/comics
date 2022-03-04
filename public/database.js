@@ -106,10 +106,11 @@ function createTriggers(db) {
     CREATE TRIGGER IF NOT EXISTS page_trg_delete
     BEFORE DELETE ON page
     WHEN (
+      (SELECT bookmark FROM comic WHERE id = OLD.comic_id) > 0 AND
+      OLD.number <= (SELECT bookmark FROM comic WHERE id = OLD.comic_id)
+    ) OR (
       (SELECT bookmark FROM comic WHERE id = OLD.comic_id) == 0 AND
       (SELECT COUNT(*) FROM page WHERE comic_id = OLD.comic_id) == 1
-    ) OR (
-      (SELECT bookmark FROM comic WHERE id = OLD.comic_id) BETWEEN 1 AND OLD.number
     )
     BEGIN
       UPDATE comic SET bookmark = bookmark - 1 WHERE id = OLD.comic_id;
@@ -140,17 +141,26 @@ function createTriggers(db) {
 function migrate(db) {
   const userVersion = db.pragma('user_version', { simple: true });
 
-  if (userVersion === 0) {
+  if (userVersion === 1) {
     db.transaction(() => {
+      db.prepare('DROP TRIGGER page_trg_delete').run();
+
       db.prepare(`
-        ALTER TABLE comic
-        ADD COLUMN
-          brightness REAL NOT NULL DEFAULT 1.0 CHECK (
-            brightness BETWEEN 0.25 AND 1.25
-          )
+        CREATE TRIGGER IF NOT EXISTS page_trg_delete
+        BEFORE DELETE ON page
+        WHEN (
+          (SELECT bookmark FROM comic WHERE id = OLD.comic_id) > 0 AND
+          OLD.number <= (SELECT bookmark FROM comic WHERE id = OLD.comic_id)
+        ) OR (
+          (SELECT bookmark FROM comic WHERE id = OLD.comic_id) == 0 AND
+          (SELECT COUNT(*) FROM page WHERE comic_id = OLD.comic_id) == 1
+        )
+        BEGIN
+          UPDATE comic SET bookmark = bookmark - 1 WHERE id = OLD.comic_id;
+        END
       `).run();
 
-      db.pragma('user_version = 1');
+      db.pragma('user_version = 2');
     })();
   }
 }
