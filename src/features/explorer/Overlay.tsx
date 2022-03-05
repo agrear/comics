@@ -127,50 +127,22 @@ export function Overlay({ comic }: OverlayProps) {
       layout
       style={{
         position: 'absolute',
-        bottom: theme.spacing(2),
-        right: theme.spacing(3)
+        bottom: theme.spacing(1),
+        left: theme.spacing(1)
       }}
     >
       <Paper
         elevation={3}
         square
         sx={{
-          display: 'grid',
-          gridTemplateAreas: `
-            'fetchNextPageButton updateComicButton'
-            'updateStatus updateStatus'
-            'cancelButton cancelButton'
-          `,
-          gridTemplateColumns: '1fr 1fr',
-          gridGap: theme => theme.spacing(3),
-          justifyItems: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: theme => theme.spacing(2),
           p: 2,
-          minWidth: 440,
-          maxWidth: 440
+          width: 240
         }}
       >
-        <Button
-          component={motion.button}
-          layout
-          variant="contained"
-          fullWidth
-          startIcon={
-            request?.mode === UpdateMode.SinglePage && running ? (
-              <CircularProgress size="1em" />
-            ) : <PostAddIcon />
-          }
-          disabled={running}
-          onClick={() => dispatch(updaterStarted({
-            comicId: comic.id, mode: UpdateMode.SinglePage
-          }))}
-          sx={{
-            gridArea: 'fetchNextPageButton',
-            whiteSpace: 'nowrap'
-          }}
-        >
-          Fetch next page
-        </Button>
-
         <Tooltip
           arrow
           placement="top"
@@ -214,6 +186,28 @@ export function Overlay({ comic }: OverlayProps) {
           </Button>
         </Tooltip>
 
+        <Button
+          component={motion.button}
+          layout
+          variant="contained"
+          fullWidth
+          startIcon={
+            request?.mode === UpdateMode.SinglePage && running ? (
+              <CircularProgress size="1em" />
+            ) : <PostAddIcon />
+          }
+          disabled={running}
+          onClick={() => dispatch(updaterStarted({
+            comicId: comic.id, mode: UpdateMode.SinglePage
+          }))}
+          sx={{
+            gridArea: 'fetchNextPageButton',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          Fetch next page
+        </Button>
+
         <Typography
           component={motion.span}
           layout
@@ -234,7 +228,6 @@ export function Overlay({ comic }: OverlayProps) {
           disabled={!running}
           onClick={() => dispatch(updaterStopped({ comicId: comic.id }))}
           sx={{
-            gridArea: 'cancelButton',
             '&:hover': {
               backgroundColor: 'error.main'
             }
