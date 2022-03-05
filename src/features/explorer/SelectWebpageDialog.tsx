@@ -1,17 +1,17 @@
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import IconButton from '@material-ui/core/IconButton';
-import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import Zoom from '@material-ui/core/Zoom';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Autocomplete from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Zoom from '@mui/material/Zoom';
 import { getReasonPhrase } from 'http-status-codes';
 import { matchSorter } from 'match-sorter';
 import { useSnackbar } from 'notistack';
@@ -33,44 +33,12 @@ import {
 import { Comic, Page } from '../comic/comicSlice';
 import { selectDownloader } from '../downloader/downloaderSlice';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  dialog: {
-    userSelect: 'none'
-  },
-  content: {
-    display: 'grid',
-    rowGap: theme.spacing(2),
-    minWidth: theme.breakpoints.values.sm,
-    padding: theme.spacing(1, 3),
-    overflow: 'visible'
-  },
-  navigation: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  backButton: {
-    marginRight: theme.spacing(1)
-  },
-  actions: {
-    padding: theme.spacing(3)
-  },
-  endAdornment: {
-    top: '50%',
-    transform: 'translate(0, -50%)'
-  },
-  url: {
-    cursor: 'pointer'
-  }
-}));
-
 interface BackButtonProps {
   disabled: boolean;
   onClick: () => void;
 }
 
 function BackButton({ disabled, onClick }: BackButtonProps) {
-  const classes = useStyles();
-
   const [hovering, setHovering] = React.useState(false);
 
   return (
@@ -79,10 +47,10 @@ function BackButton({ disabled, onClick }: BackButtonProps) {
         <IconButton
           size="small"
           disabled={disabled}
-          className={classes.backButton}
           onClick={onClick}
           onMouseEnter={() => setHovering(true)}
           onMouseLeave={() => setHovering(false)}
+          sx={{ mr: 1 }}
         >
           <ArrowBackIcon />
         </IconButton>
@@ -96,7 +64,6 @@ interface SelectNodeDialogProps {
 }
 
 export function SelectWebpageDialog({ comic }: SelectNodeDialogProps) {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -141,16 +108,26 @@ export function SelectWebpageDialog({ comic }: SelectNodeDialogProps) {
       open={navigation === 'selectWebpage'}
       maxWidth="lg"
       onClose={handleClose}
-      className={classes.dialog}
+      sx={{ userSelect: 'none' }}
     >
       <DialogTitle>
         {selectedPage ? `Edit page ${selectedPage.number + 1}` : 'Create new page'}
       </DialogTitle>
 
-      <DialogContent className={classes.content}>
+      <DialogContent
+        sx={{
+          display: 'grid',
+          rowGap: 2,
+          minWidth: theme => theme.breakpoints.values.sm,
+          px: 3,
+          py: 1,
+          overflow: 'visible'
+        }}
+      >
         <Typography>
-          URL: <span
-            className={classes.url}
+          URL: <Box
+            component="span"
+            sx={{ cursor: 'pointer' }}
             onClick={() => {
               window.comicsApi.copyToClipboard(url);
               enqueueSnackbar('URL copied to clipboard', {
@@ -161,7 +138,7 @@ export function SelectWebpageDialog({ comic }: SelectNodeDialogProps) {
               });
             }}>
               {url}
-            </span>
+            </Box>
         </Typography>
         <Typography>
           Images: {webpage?.images?.length ?? 'N/A'}
@@ -172,7 +149,7 @@ export function SelectWebpageDialog({ comic }: SelectNodeDialogProps) {
           </Typography>
         )}
 
-        <div className={classes.navigation}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <BackButton
             disabled={history.length <= 1}
             onClick={() => dispatch(previousWebpageSelected())}
@@ -209,9 +186,7 @@ export function SelectWebpageDialog({ comic }: SelectNodeDialogProps) {
             filterOptions={(options, state) => (
               matchSorter(options, state.inputValue)
             )}
-            getOptionSelected={(option, value) => option === value}
             options={options}
-            classes={{ endAdornment: classes.endAdornment }}
             inputValue={inputValue}
             onInputChange={(event, newInputValue) => {
               setInputValue(newInputValue);
@@ -232,11 +207,17 @@ export function SelectWebpageDialog({ comic }: SelectNodeDialogProps) {
                 }}
               />
             )}
+            sx={{
+              '& .MuiAutocomplete-endAdornment': {
+                top: '50%',
+                transform: 'translate(0, -50%)'
+              }
+            }}
           />
-        </div>
+        </Box>
       </DialogContent>
 
-      <DialogActions className={classes.actions}>
+      <DialogActions sx={{ p: 3 }}>
         <Button onClick={handleClose}>
           Cancel
         </Button>

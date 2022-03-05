@@ -1,17 +1,23 @@
-import Button, { ButtonProps } from '@material-ui/core/Button';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Grow from '@material-ui/core/Grow';
-import Paper from '@material-ui/core/Paper';
-import Popper from '@material-ui/core/Popper';
+import Button, { ButtonProps } from '@mui/material/Button';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Grow from '@mui/material/Grow';
+import Paper, { PaperProps } from '@mui/material/Paper';
+import Popper from '@mui/material/Popper';
 import React from 'react';
 
 interface FlyoutProps {
   buttonProps: ButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>;
-  children: React.ReactNode;
+  children: React.ReactElement<any, string | React.JSXElementConstructor<any>>;
   onClose?: () => void;
+  paperProps?: PaperProps
 }
 
-export function Flyout({ buttonProps, children, onClose }: FlyoutProps) {
+export function Flyout({
+  buttonProps,
+  children,
+  onClose,
+  paperProps = {}
+}: FlyoutProps) {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
 
@@ -19,23 +25,21 @@ export function Flyout({ buttonProps, children, onClose }: FlyoutProps) {
 
   const handleToggle = React.useCallback(() => {
     setOpen(open => {
-      if (!open && onClose !== undefined) {
-        onClose();
+      if (!open) {
+        onClose?.();
       }
 
       return !open;
     });
   }, [onClose]);
 
-  const handleClose = (event: React.MouseEvent<EventTarget>) => {
+  const handleClose = (event: MouseEvent | TouchEvent) => {
     const target = event.target as HTMLElement;
-    if (anchorRef.current && anchorRef.current.contains(target)) {
+    if (anchorRef.current?.contains(target)) {
       return;
     }
 
-    if (onClose !== undefined) {
-      onClose();
-    }
+    onClose?.();
 
     setOpen(false);
   };
@@ -55,7 +59,6 @@ export function Flyout({ buttonProps, children, onClose }: FlyoutProps) {
         anchorEl={anchorRef.current}
         role={undefined}
         transition
-        disablePortal
       >
         {({ TransitionProps, placement }) => (
           <Grow
@@ -64,7 +67,7 @@ export function Flyout({ buttonProps, children, onClose }: FlyoutProps) {
               transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom'
             }}
           >
-            <Paper>
+            <Paper {...paperProps}>
               <ClickAwayListener onClickAway={handleClose}>
                 {children}
               </ClickAwayListener>

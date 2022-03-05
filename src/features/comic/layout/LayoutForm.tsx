@@ -1,11 +1,12 @@
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormLabel from '@material-ui/core/FormLabel';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import ImageIcon from '@material-ui/icons/ImageSharp';
+import ImageIcon from '@mui/icons-material/ImageSharp';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import { useTheme } from '@mui/material/styles';
 import { EntityId } from '@reduxjs/toolkit';
 import { Form, Formik } from 'formik';
 import { motion, MotionStyle } from 'framer-motion';
@@ -22,61 +23,6 @@ import {
   ObjectFit,
   ObjectPosition
 } from 'utils';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    form: {
-      display: "flex",
-      flexDirection: "column",
-      height: "100%"
-    },
-    content: {
-      display: "flex",
-      margin: theme.spacing(3, 0),
-      padding: theme.spacing(1, 3)
-    },
-    fields: {
-      display: "flex",
-      flexDirection: "column"
-    },
-    demo: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      flexGrow: 1
-    },
-    actions: {
-      display: "flex",
-      justifyContent: "flex-end",
-      margin: theme.spacing(2)
-    },
-    mockContainer: {
-      position: "relative",
-      display: "flex",
-      border: "2px solid white"
-    },
-    mockImage: {
-      display: "flex",
-      width: "100%",
-      height: "100%",
-      alignItems: "center",
-      justifyContent: "center",
-      opacity: 0.5,
-      border: "1px solid white",
-      zIndex: theme.zIndex.tooltip,
-      pointerEvents: "none"
-    },
-    imageIcon: {
-      minWidth: "initial"
-    },
-    positionPoint: {
-      position: "absolute",
-      width: 16,
-      height: 16,
-      borderRadius: "50%"
-    }
-  })
-);
 
 interface FormValues {
   fit: ObjectFit;
@@ -103,22 +49,38 @@ interface DemoProps {
 }
 
 function Demo({ values, setFieldValue }: DemoProps) {
-  const classes = useStyles();
+  const theme = useTheme();
 
   const container = { width: 180, height: 140 };
   const image = { width: 80, height: 100 };
   const size = fitObjectSize(values.fit, container, image);
 
   return (
-    <div
-      style={{
+    <Box
+      sx={{
+        position: "relative",
+        display: "flex",
+        border: "2px solid white",
         ...container,
         alignItems: getVerticalAlignment(values.position),
         justifyContent: getHorizontalAlignment(values.position)
       }}
-      className={classes.mockContainer}
     >
-      <motion.div layout style={size} className={classes.mockImage}>
+      <motion.div
+        layout
+        style={{
+          ...size,
+          display: "flex",
+          width: "100%",
+          height: "100%",
+          alignItems: "center",
+          justifyContent: "center",
+          opacity: 0.5,
+          border: "1px solid white",
+          zIndex: theme.zIndex.tooltip,
+          pointerEvents: "none"
+        }}
+      >
         <ImageIcon />
       </motion.div>
       {positionPoints.map(({ position, style }) => (
@@ -126,14 +88,17 @@ function Demo({ values, setFieldValue }: DemoProps) {
           key={position}
           style={{
             ...style,
-            backgroundColor: position === values.position ? 'red' : 'white'
+            backgroundColor: position === values.position ? 'red' : 'white',
+            position: "absolute",
+            width: 16,
+            height: 16,
+            borderRadius: "50%"
           }}
           whileHover={{ scale: 1.2 }}
           onClick={() => setFieldValue('position', position)}
-          className={classes.positionPoint}
         />
       ))}
-    </div>
+    </Box>
   );
 }
 
@@ -144,7 +109,6 @@ interface LayoutFormProps {
 }
 
 export function LayoutForm({ comicId, layout, onSubmit }: LayoutFormProps) {
-  const classes = useStyles();
   const dispatch = useDispatch();
 
   return (
@@ -162,9 +126,16 @@ export function LayoutForm({ comicId, layout, onSubmit }: LayoutFormProps) {
       }}
     >
       {({ handleChange, handleSubmit, isSubmitting, setFieldValue, values }) => (
-        <Form onSubmit={handleSubmit} className={classes.form}>
-          <div className={classes.content}>
-            <div className={classes.fields}>
+        <Form
+          onSubmit={handleSubmit}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%"
+          }}
+        >
+          <Box sx={{ display: "flex", my: 3, px: 3, py: 1 }}>
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
               <FormControl component="fieldset">
                 <FormLabel component="legend">Fit</FormLabel>
                 <RadioGroup name="fit" value={values.fit} onChange={handleChange}>
@@ -175,13 +146,20 @@ export function LayoutForm({ comicId, layout, onSubmit }: LayoutFormProps) {
                   <FormControlLabel value="scale-down" control={<Radio />} label="Scale down" />
                 </RadioGroup>
               </FormControl>
-            </div>
-            <div className={classes.demo}>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexGrow: 1
+              }}
+            >
               <Demo values={values} setFieldValue={setFieldValue} />
-            </div>
-          </div>
+            </Box>
+          </Box>
 
-          <div className={classes.actions}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", m: 2 }}>
             <Button
               disabled={isSubmitting}
               variant="contained"
@@ -190,7 +168,7 @@ export function LayoutForm({ comicId, layout, onSubmit }: LayoutFormProps) {
             >
               Save
             </Button>
-          </div>
+          </Box>
         </Form>
       )}
     </Formik>

@@ -1,7 +1,13 @@
-import { green, lightBlue } from '@material-ui/core/colors';
-import Grow from '@material-ui/core/Grow';
-import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles';
-import Zoom from '@material-ui/core/Zoom';
+import Grow from '@mui/material/Grow';
+import Zoom from '@mui/material/Zoom';
+import { lightBlue } from '@mui/material/colors';
+import {
+  createTheme as createMuiTheme,
+  lighten,
+  responsiveFontSizes
+} from '@mui/material/styles';
+
+const theme = createMuiTheme();
 
 export const createTheme = () => responsiveFontSizes(createMuiTheme({
   breakpoints: {
@@ -13,85 +19,135 @@ export const createTheme = () => responsiveFontSizes(createMuiTheme({
       xl: 1920
     }
   },
-  palette: {
-    type: "dark",
-    primary: {
-      main: lightBlue["500"]
-    }
-  },
-  props: {
+  components: {
+    MuiAppBar: {
+      defaultProps: {
+        position: 'static',
+        sx: {
+          backgroundColor: lighten(theme.palette.grey[900], 0.1)
+        }
+      },
+      styleOverrides: {
+        root: {
+          height: 40,
+          boxShadow: 'none',
+          backgroundImage: 'none'
+        }
+      }
+    },
     MuiButton: {
-      size: "large"
+      defaultProps: {
+        size: 'large'
+      }
     },
     MuiDialog: {
-      TransitionComponent: Grow,
-      transitionDuration: {
-        enter: 400,
-        exit: 200
+      defaultProps: {
+        TransitionComponent: Grow,
+        transitionDuration: {
+          enter: 400,
+          exit: 200
+        }
       }
     },
     MuiFormControl: {
-      fullWidth: true,
-      margin: "dense",
-      variant: "outlined"
+      defaultProps: {
+        fullWidth: true,
+        margin: 'dense',
+        variant: 'outlined'
+      }
     },
     MuiLink: {
-      color: "textPrimary",
-      underline: "always"
+      defaultProps: {
+        color: 'textPrimary'
+      }
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundColor: lighten(theme.palette.grey[900], 0.1),
+          backgroundImage: 'none'
+        }
+      }
     },
     MuiSvgIcon: {
-      fontSize: "large"
+      defaultProps: {
+        fontSize: 'large'
+      }
+    },
+    MuiTabs: {
+      styleOverrides: {
+        indicator: {
+          height: '4px'
+        }
+      }
+    },
+    MuiToolbar: {
+      defaultProps:{
+        variant: 'dense',
+        disableGutters: true
+      },
+      styleOverrides: {
+        root: {
+          minHeight: 0,
+          height: 40,
+          flex: '1 1 100%',
+          alignItems: 'stretch',
+          userSelect: 'none'
+        }
+      }
     },
     MuiTooltip: {
-      arrow: true,
-      disableHoverListener: true,
-      TransitionComponent: Zoom
+      defaultProps: {
+        arrow: true,
+        disableHoverListener: true,
+        TransitionComponent: Zoom
+      },
+      styleOverrides: {
+        tooltip: {
+          fontSize: '1.25em'
+        }
+      }
     },
     MuiTypography: {
-      color: "textPrimary"
+      defaultProps: {
+        color: 'textPrimary'
+      }
+    }
+  },
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: lightBlue['500']
+    },
+    background: {
+      default: '#202020',
+      paper: lighten(theme.palette.grey[900], 0.1)
     }
   },
   typography: {
     h1: {
-      fontSize: "3.25rem"
+      fontSize: '3.25rem'
     },
     h2: {
-      fontSize: "2.5rem"
+      fontSize: '2.5rem'
     },
     h3: {
-      fontSize: "2rem"
+      fontSize: '2rem'
     },
     h4: {
-      fontSize: "1.6rem"
+      fontSize: '1.6rem'
     },
     h5: {
-      fontSize: "1.425rem"
+      fontSize: '1.425rem'
     },
     body1: {
-      fontSize: "1.325rem"
+      fontSize: '1.325rem'
     },
     body2: {
-      fontSize: "1.125rem"
+      fontSize: '1.125rem'
     },
     caption: {
-      fontSize: "0.875rem"
-    }
-  },
-  overrides: {
-    MuiAppBar: {
-      colorPrimary: {
-        backgroundColor: green['900']
-      }
-    },
-    MuiTabs: {
-      indicator: {
-        height: '4px'
-      }
-    },
-    MuiTooltip: {
-      tooltip: {
-        fontSize: '1.25em'
-      }
+      fontSize: '0.875rem'
     }
   }
 }));

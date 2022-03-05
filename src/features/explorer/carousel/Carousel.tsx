@@ -1,37 +1,12 @@
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Tooltip from '@material-ui/core/Tooltip';
-import { makeStyles, Theme, useTheme } from '@material-ui/core/styles';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Tooltip from '@mui/material/Tooltip';
+import { useTheme } from '@mui/material/styles';
 import { clamp, snap } from '@popmotion/popcorn';
 import { animate, motion, useMotionValue, Variants } from 'framer-motion';
 import React from 'react';
 
 import CarouselItem from './CarouselItem';
 import { WebImage } from '../../comic/imageSlice';
-
-interface StyleProps {
-  numItems: number;
-  itemWidth: number;
-  spacing: number;
-}
-
-const useStyles = makeStyles((theme: Theme) => ({
-  tooltip: {
-    maxWidth: theme.breakpoints.values.md
-  },
-  carousel: ({ itemWidth }: StyleProps) => ({
-    display: 'flex',
-    position: 'absolute',
-    top: 0,
-    width: itemWidth,
-    zIndex: 1
-  }),
-  images: ({ itemWidth, spacing }: StyleProps) => ({
-    display: 'grid',
-    gridAutoFlow: `column`,
-    gridColumnGap: theme.spacing(spacing),
-    padding: 0
-  })
-}));
 
 function findLargestImageIndex(images: WebImage[]) {
   return images.reduce(({ size, index }, { width, height }, i) => {
@@ -64,10 +39,9 @@ function Images({
   onSelect,
   onSelectedIndexChange
 }: ImagesProps) {
-  const classes = useStyles({ numItems: images.length, itemWidth, spacing });
   const theme = useTheme();
 
-  const itemDistance = itemWidth + theme.spacing(spacing);
+  const itemDistance = itemWidth + parseInt(theme.spacing(spacing));
   const dragDistance = (images.length - 1) * itemDistance;
   const snapTo = snap(itemDistance);
 
@@ -109,8 +83,13 @@ function Images({
         power: 0.2,
         modifyTarget: snapTo
       }}
-      style={{ x }}
-      className={classes.images}
+      style={{
+        x,
+        display: 'grid',
+        gridAutoFlow: `column`,
+        gridColumnGap: theme.spacing(spacing),
+        padding: 0
+      }}
     >
       {images.map((image, i) => (
         <CarouselItem
@@ -145,11 +124,10 @@ export function Carousel({
   spacing = 4,
   onImageSelected
 }: CarouselProps) {
-  const classes = useStyles({ numItems: images?.length ?? 0, itemWidth, spacing });
-
   const [itemIndex, setItemIndex] = React.useState(
     selectedIndex !== -1 ? selectedIndex : findLargestImageIndex(images)
   );
+
   const [tooltip, setTooltip] = React.useState('');
 
   return (
@@ -165,9 +143,21 @@ export function Carousel({
         disableTouchListener
         open={true}
         placement="top"
-        classes={{ tooltip: classes.tooltip }}
+        sx={{
+          '& .MuiTooltip-tooltip': {
+            maxWidth: theme => theme.breakpoints.values.md
+          }
+        }}
       >
-        <motion.div className={classes.carousel}>
+        <motion.div
+          style={{
+            display: 'flex',
+            position: 'absolute',
+            top: 0,
+            width: itemWidth,
+            zIndex: 1
+          }}
+        >
           <Images
             images={images}
             selectedIndex={itemIndex}

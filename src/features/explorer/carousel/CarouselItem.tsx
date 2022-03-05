@@ -1,27 +1,8 @@
-import { makeStyles, Theme } from '@material-ui/core/styles';
 import { clamp } from '@popmotion/popcorn';
 import { motion, Variants } from 'framer-motion';
 import React from 'react';
 
 import { WebImage } from '../../comic/imageSlice';
-
-interface StyleProps {
-  width: number;
-  height: number;
-}
-
-export const useStyles = makeStyles((theme: Theme) => ({
-  item: ({ width, height }: StyleProps) => ({
-    width,
-    height,
-    listStyle: 'none'
-  }),
-  image: ({ width, height }: StyleProps) => ({
-    width,
-    height,
-    objectFit: 'cover'
-  })
-}));
 
 const variants: Variants = {
   initial: (offset: number) => ({
@@ -60,8 +41,6 @@ function CarouselItem({
   onSelect,
   onTap
 }: CarouselItemProps) {
-  const classes = useStyles({ width, height });
-
   React.useEffect(() => {
     if (selected && image !== undefined) {
       onSelect(image);
@@ -72,17 +51,23 @@ function CarouselItem({
     <motion.li
       variants={variants}
       custom={offset}
-      className={classes.item}
+      style={{
+        width,
+        height,
+        listStyle: 'none'
+      }}
     >
       <motion.img
         src={image?.url}
-        width={width}
-        height={height}
         draggable={false}
         initial={{ cursor: "default" }}
-        className={classes.image}
         whileHover={{ cursor: "pointer" }}
         onTap={onTap}
+        style={{
+          width,
+          height,
+          objectFit: 'cover'
+        }}
       />
     </motion.li>
   );

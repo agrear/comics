@@ -1,11 +1,10 @@
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Slider from '@material-ui/core/Slider';
-import Tooltip from '@material-ui/core/Tooltip';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slider from '@mui/material/Slider';
+import Tooltip from '@mui/material/Tooltip';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -15,23 +14,6 @@ import {
   selectNavigation,
   selectSelectedPage
 } from './explorerSlice';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    dialog: {
-      userSelect: 'none'
-    },
-    content: {
-      display: 'grid',
-      rowGap: theme.spacing(2),
-      minWidth: theme.breakpoints.values.sm,
-      padding: theme.spacing(1, 3)
-    },
-    actions: {
-      padding: theme.spacing(3)
-    }
-  })
-);
 
 interface Props {
   children: React.ReactElement;
@@ -54,7 +36,6 @@ interface SelectPageNumberDialogProps {
 export function SelectPageNumberDialog({
   pageTotal
 }: SelectPageNumberDialogProps) {
-  const classes = useStyles();
   const dispatch = useDispatch();
 
   const navigation = useSelector(selectNavigation);
@@ -76,14 +57,24 @@ export function SelectPageNumberDialog({
     <Dialog
       open={navigation === 'editPageNumber'}
       maxWidth="lg"
-      className={classes.dialog}
+      sx={{ userSelect: 'none' }}
       onClose={handleClose}
     >
-      <DialogTitle>Edit page number</DialogTitle>
+      <DialogTitle>
+        Edit order of page {(selectedPage?.number ?? 0) + 1}
+      </DialogTitle>
 
-      <DialogContent className={classes.content}>
+      <DialogContent
+        sx={{
+          display: 'grid',
+          rowGap: 2,
+          minWidth: theme => theme.breakpoints.values.sm,
+          px: 3,
+          py: 1
+        }}
+      >
         <Slider
-          ValueLabelComponent={ValueLabelComponent}
+          components={{ ValueLabel: ValueLabelComponent }}
           value={pageNumber}
           onChange={(event, newValue) => {
             if (typeof newValue === 'number') {
@@ -92,10 +83,11 @@ export function SelectPageNumberDialog({
           }}
           min={0}
           max={pageTotal - 1}
+          valueLabelDisplay="auto"
         />
       </DialogContent>
 
-      <DialogActions className={classes.actions}>
+      <DialogActions sx={{ p: 3 }}>
         <Button onClick={handleClose}>
           Cancel
         </Button>

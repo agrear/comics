@@ -1,13 +1,13 @@
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import Link from '@material-ui/core/Link';
-import Slider from '@material-ui/core/Slider';
-import Switch from '@material-ui/core/Switch';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import AddIcon from '@material-ui/icons/Add';
-import EditIcon from '@material-ui/icons/Edit';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Link from '@mui/material/Link';
+import Slider from '@mui/material/Slider';
+import Switch from '@mui/material/Switch';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import { styled } from '@mui/material/styles';
 import { formatDistance } from 'date-fns';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,54 +26,26 @@ import Tab from '../tabs/Tab';
 import TabbedPage from '../tabs/TabbedPage';
 import { getFutureDate } from 'utils';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  text: {
-    textOverflow: "ellipsis"
-  },
-  comics: {
-    flex: "1 1 auto",
-    alignSelf: "center",
-    margin: theme.spacing(1),
-    maxLines: 1,
-    overflow: "hidden",
-    textOverflow: "ellipsis"
-  },
-  pages: {
-    flex: "1 1 auto",
-    alignSelf: "center",
-    margin: theme.spacing(1),
-    maxLines: 1,
-    overflow: "hidden",
-    textOverflow: "ellipsis"
-  },
-  tabs: {
-    marginLeft: theme.spacing(1)
-  },
-  grid: {
-    display: 'grid',
-    gridAutoFlow: 'row',
-    alignItems: 'start',
-    alignContent: 'start',
-    gridRowGap: theme.spacing(3),
-    marginTop: theme.spacing(2),
-    marginLeft: theme.spacing(2)
-  },
-  group: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start'
-  },
-  synopsis: {
-    maxWidth: 1024
-  },
-  switch: {
-    maxWidth: 800,
-    justifySelf: 'start',
-    margin: 0
-  },
-  slider: {
-    maxWidth: 800
-  }
+const StyledFormGroup = styled(FormGroup)({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  position: 'relative'
+});
+
+const StyledSlider = styled(Slider)(({ theme }) => ({
+  maxWidth: `calc(100% - ${theme.spacing(3)})`,
+  marginLeft: theme.spacing(2)
+}));
+
+const StyledTab = styled(Tab)(({ theme }) => ({
+  display: 'grid',
+  gridAutoFlow: 'row',
+  alignItems: 'start',
+  alignContent: 'start',
+  gridRowGap: theme.spacing(3),
+  maxWidth: 800,
+  marginTop: theme.spacing(4)
 }));
 
 interface DetailPageProps {
@@ -99,7 +71,6 @@ function DetailPage({
   selectedTab,
   onSelectedTabChange
  }: DetailPageProps) {
-  const classes = useStyles();
   const dispatch = useDispatch();
 
   const nextAutoUpdate = updates.enabled ? (
@@ -115,21 +86,21 @@ function DetailPage({
     <TabbedPage
       selectedTab={selectedTab}
       onSelectedTabChange={onSelectedTabChange}
-      className={classes.tabs}
+      sx={{ px: 2 }}
     >
-      <Tab label="General" className={classes.grid}>
+      <StyledTab label="General">
         <Typography variant="h2">{title}</Typography>
-        <Typography variant="h4">{`by ${author}`}</Typography>
+        <Typography variant="h5" sx={{ mt: -2 }}>{author}</Typography>
         <Typography variant="h6">
           <Link href={url} rel="noreferrer" target="_blank">{url}</Link>
         </Typography>
-        <Typography variant="body1" className={classes.synopsis}>
+        <Typography variant="body1" sx={{ maxWidth: 1024 }}>
           {synopsis}
         </Typography>
         <Tags>{tags}</Tags>
-      </Tab>
+      </StyledTab>
 
-      <Tab label="Updates" className={classes.grid}>
+      <StyledTab label="Updates">
         <FormControlLabel
           control={
             <Switch
@@ -151,10 +122,10 @@ function DetailPage({
           }
           label="Updates enabled"
           labelPlacement="start"
-          className={classes.switch}
+          sx={{ maxWidth: 800, justifySelf: 'start', m: 0 }}
         />
 
-        <FormGroup className={classes.group}>
+        <StyledFormGroup>
           <FormControlLabel
             control={
               <Switch
@@ -175,10 +146,10 @@ function DetailPage({
             }
             label="New page limit"
             labelPlacement="start"
-            className={classes.switch}
+            sx={{ maxWidth: 800, justifySelf: 'start', m: 0 }}
           />
 
-          <Slider
+          <StyledSlider
             value={limit}
             disabled={!updates.enabled || limit === -1}
             min={1}
@@ -188,13 +159,12 @@ function DetailPage({
               comicUpdatesUpdated({ comicId: id, updates: { limit } })
             )}
             onChange={(event, value) => setLimit(value as number)}
-            className={classes.slider}
           />
-        </FormGroup>
+        </StyledFormGroup>
 
-        <FormGroup className={classes.group}>
+        <StyledFormGroup>
           <Typography gutterBottom>Update interval (hours)</Typography>
-          <Slider
+          <StyledSlider
             value={interval}
             disabled={!updates.enabled}
             min={24}
@@ -210,11 +180,10 @@ function DetailPage({
               })
             )}
             onChange={(event, value) => setInterval(value as number)}
-            className={classes.slider}
           />
-        </FormGroup>
+        </StyledFormGroup>
 
-        <FormGroup className={classes.group}>
+        <StyledFormGroup>
           <Typography>
             {updated !== null ? (
               `Last updated ${formatDistance(updated, new Date())} ago`
@@ -226,14 +195,13 @@ function DetailPage({
               Next update in {formatDistance(nextAutoUpdate, new Date())}
             </Typography>
           )}
-        </FormGroup>
-      </Tab>
+        </StyledFormGroup>
+      </StyledTab>
     </TabbedPage>
   );
 }
 
 function Library() {
-  const classes = useStyles();
   const comics = useSelector(selectComics);
 
   const [selectedTab, setSelectedTab] = React.useState(0);
@@ -258,18 +226,27 @@ function Library() {
           primaryTypographyProps={{
             variant: "h5",
             noWrap: true,
-            className: classes.text
+            sx: { textOverflow: 'ellipsis' }
           }}
-          secondary={`by ${author}`}
+          secondary={author}
           secondaryTypographyProps={{
             noWrap: true,
-            className: classes.text
+            sx: { textOverflow: 'ellipsis' }
           }}
         />
       )}
       MasterToolbar={({ items }) => (
         <>
-          <Typography variant="h6" className={classes.comics}>
+          <Typography
+            variant="h6"
+            sx={{
+              flex: '1 1 auto',
+              m: 1,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}
+          >
             {showNumItems(items.length, 'comic')}
           </Typography>
           <EditComicDialog
@@ -288,15 +265,27 @@ function Library() {
       )}
       DetailToolbar={({ id, pages }) => (
         <>
-          {<Typography variant="h6" className={classes.pages}>
+          {<Typography
+            variant="h6"
+            sx={{
+              flex: '1 1 auto',
+              alignSelf: 'center',
+              m: 1,
+              maxLines: 1,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}
+          >
             {showNumItems(pages.length, 'page')}
           </Typography>}
+
           <EditComicDialog
             title="Edit Comic"
             buttonIcon={<EditIcon />}
             buttonText="Edit"
             comicId={id}
           />
+
           <DeleteComic comicId={id} />
         </>
       )}

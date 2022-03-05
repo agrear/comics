@@ -1,25 +1,8 @@
-import { Theme, makeStyles } from '@material-ui/core/styles';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Typography from '@material-ui/core/Typography';
-import ViewListIcon from '@material-ui/icons/ViewList';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Typography from '@mui/material/Typography';
 import { motion, Variants } from 'framer-motion';
 import React from 'react';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  placeholder: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    height: "100%",
-    userSelect: "none"
-  },
-  icon: {
-    minWidth: "initial",
-    padding: 0
-  }
-}));
 
 const variants: Variants = {
   initial: {
@@ -47,17 +30,23 @@ const variants: Variants = {
 };
 
 export function Placeholder() {
-  const classes = useStyles();
-
   return (
     <motion.div
-      className={classes.placeholder}
       initial="initial"
       animate="enter"
       exit="exit"
       variants={variants}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '100%',
+        userSelect: 'none'
+      }}
     >
-      <ListItemIcon className={classes.icon}>
+      <ListItemIcon sx={{ minWidth: 'initial', p: 0 }}>
         <ViewListIcon />
       </ListItemIcon>
       <Typography variant="h4">

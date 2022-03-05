@@ -1,4 +1,5 @@
-import ListItem from '@material-ui/core/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import { SxProps } from '@mui/material/styles';
 import React from 'react';
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
@@ -6,12 +7,12 @@ import navItems from './navItems';
 
 interface NavItemProps {
   path: string;
-  className: string;
   closeDrawer: () => void;
   children: React.ReactNode;
+  sx: SxProps;
 }
 
-export function NavItem({ path, className, closeDrawer, children }: NavItemProps) {
+export function NavItem({ path, closeDrawer, children, sx }: NavItemProps) {
   const history = useHistory();
   const location = useLocation();
   const match = useRouteMatch({ path, exact: path === '/' });
@@ -29,10 +30,8 @@ export function NavItem({ path, className, closeDrawer, children }: NavItemProps
   ), [currIndex, index]);
 
   return (
-    <ListItem
-      button
+    <ListItemButton
       disableGutters
-      className={className}
       selected={match !== null}
       onClick={() => {
         if (match === null) {
@@ -43,9 +42,10 @@ export function NavItem({ path, className, closeDrawer, children }: NavItemProps
           closeDrawer();
         }
       }}
+      sx={sx}
     >
       {children}
-    </ListItem>
+    </ListItemButton>
   );
 }
 

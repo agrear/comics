@@ -1,7 +1,7 @@
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import InputLabel from '@material-ui/core/InputLabel';
-import OutlinedInput, { OutlinedInputProps } from '@material-ui/core/OutlinedInput';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import InputLabel from '@mui/material/InputLabel';
+import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import { useField } from 'formik';
 import React from 'react';
 

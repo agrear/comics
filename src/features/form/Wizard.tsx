@@ -1,43 +1,11 @@
-import Button from '@material-ui/core/Button';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import Stepper from '@material-ui/core/Stepper';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import Stepper from '@mui/material/Stepper';
 import { Form, Formik, FormikHelpers } from 'formik';
 import { AnimatePresence, motion } from 'framer-motion';
 import React from 'react';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    stepper: {
-      padding: 0,
-      marginBottom: theme.spacing(2)
-    },
-    fields: {
-      display: "flex",
-      flexDirection: "column",
-      position: "relative",
-      margin: theme.spacing(2),
-      height: theme.spacing(52),
-      overflow: "hidden"
-    },
-    page: {
-      flexGrow: 1
-    },
-    buttons: {
-      display: "flex",
-      justifyContent: "flex-end",
-      margin: theme.spacing(2)
-    },
-    backButton: {
-      width: 80,
-      marginRight: theme.spacing(1)
-    },
-    nextButton: {
-      width: 80
-    }
-  })
-);
 
 const variants = {
   hidden: (direction: number) => ({
@@ -71,8 +39,12 @@ interface WizardProps<T> {
   children: React.ReactNode;
 }
 
-export function Wizard<T extends object>({ initialValues, steps, onSubmit, children }: WizardProps<T>) {
-  const classes = useStyles();
+export function Wizard<T extends object>({
+  initialValues,
+  steps,
+  onSubmit,
+  children
+}: WizardProps<T>) {
   const [page, setPage] = React.useState(0);
   const [direction, setDirection] = React.useState(0);
   const [values, setValues] = React.useState(initialValues);
@@ -120,7 +92,7 @@ export function Wizard<T extends object>({ initialValues, steps, onSubmit, child
           <Stepper
             activeStep={page}
             alternativeLabel
-            className={classes.stepper}
+            sx={{ p: 0, mb: 2 }}
           >
             {steps.map(({ label }) => (
               <Step key={label}>
@@ -129,7 +101,16 @@ export function Wizard<T extends object>({ initialValues, steps, onSubmit, child
             ))}
           </Stepper>
 
-          <div className={classes.fields}>
+          <Box 
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'relative',
+              m: 2,
+              height: theme => theme.spacing(52),
+              overflow: 'hidden'
+            }}
+          >
             <AnimatePresence exitBeforeEnter custom={direction}>
               <motion.div
                 key={page}
@@ -138,31 +119,32 @@ export function Wizard<T extends object>({ initialValues, steps, onSubmit, child
                 exit="exit"
                 custom={direction}
                 variants={variants}
-                className={classes.page}
+                style={{ flexGrow: 1 }}
               >
                 {activePage}
               </motion.div>
             </AnimatePresence>
-          </div>
+          </Box>
 
-          <div className={classes.buttons}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', m: 2 }}>
             <Button
               disabled={page === 0}
               onClick={goToPreviousPage}
-              className={classes.backButton}
+              sx={{ width: 80 }}
             >
               Back
             </Button>
+        
             <Button
               disabled={isSubmitting}
               variant="contained"
               color="primary"
               type="submit"
-              className={classes.nextButton}
+              sx={{ width: 80, mr: 1 }}
             >
               {isLastPage ? 'Finish' : 'Next'}
             </Button>
-          </div>
+          </Box>
         </Form>
       )}
     </Formik>

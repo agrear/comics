@@ -1,61 +1,35 @@
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import { fade, lighten, makeStyles, Theme } from '@material-ui/core/styles';
-import MenuIcon from '@material-ui/icons/Menu';
-import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
-import clsx from 'clsx';
+import MenuIcon from '@mui/icons-material/Menu';
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import { alpha, lighten, styled, useTheme } from '@mui/material/styles';
 import { motion, useCycle, Variants } from 'framer-motion';
 import React from 'react';
 
 import NavItem from './NavItem';
 import navItems from './navItems';
 
-const navbarWidth = 52;
+export const NAVBAR_WIDTH = 40;
+export const ICON_SIZE = 28;
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    width: navbarWidth,
-    zIndex: theme.zIndex.drawer
-  },
-  drawer: {
-    position: 'absolute',
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    backdropFilter: 'blur(4px)'
-  },
-  menu: {
-    flexGrow: 1
-  },
-  button: {
-    ...theme.typography.button,
-    fontSize: 20
-  },
-  item: {
-    width: '100%',
-    height: '52px',
-    cursor: 'default'
-  },
-  icon: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(-1.5),
-    padding: 0
-  },
-  exit: {
-    "&:hover": {
-      backgroundColor: fade(lighten(theme.palette.error.main, 0.2), 0.5)
-    }
-  }
-}));
+const StyledListItemButton = styled(ListItemButton)({
+  width: '100%',
+  height: NAVBAR_WIDTH,
+  cursor: 'default'
+});
+
+const StyledListItemIcon = styled(ListItemIcon)({
+  display: 'flex',
+  justifyContent: 'center',
+  minWidth: 0,
+  width: NAVBAR_WIDTH,
+  ml: 1,
+  mr: -1.5,
+  p: 0
+});
 
 const variants: Variants = {
   initial: {
@@ -96,7 +70,7 @@ const variants: Variants = {
 };
 
 function Navbar() {
-  const classes = useStyles();
+  const theme = useTheme();
   const [isOpen, toggleOpen] = useCycle(false, true);
 
   const closeDrawer = () => {
@@ -108,34 +82,51 @@ function Navbar() {
   return (
     <ClickAwayListener onClickAway={() => closeDrawer()}>
       <motion.div
-        className={classes.root}
         variants={variants}
         initial="initial"
         animate="enter"
         exit="exit"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          bottom: 0,
+          width: NAVBAR_WIDTH,
+          zIndex: theme.zIndex.drawer,
+          background: lighten(theme.palette.grey[900], 0.1)
+        }}
       >
         <motion.div
-          className={classes.drawer}
           variants={variants}
           initial="closed"
           animate={isOpen ? 'open' : 'closed'}
+          style={{
+            position: 'absolute',
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            backdropFilter: 'blur(4px)'
+          }}
         >
-          <List disablePadding className={classes.menu}>
-            <ListItem
+          <List disablePadding sx={{ flexGrow: 1 }}>
+            <StyledListItemButton
               key="Menu"
-              button
               disableGutters
-              className={classes.item}
               onClick={() => toggleOpen()}
             >
-              <ListItemIcon className={classes.icon}>
-                <MenuIcon fontSize="large" />
-              </ListItemIcon>
+              <StyledListItemIcon>
+                <MenuIcon sx={{ fontSize: ICON_SIZE }} />
+              </StyledListItemIcon>
               <ListItemText
                 primary="Comics"
-                primaryTypographyProps={{ className: classes.button }}
+                primaryTypographyProps={{
+                  variant: 'button',
+                  sx: { fontSize: 20 }
+                }}
               />
-            </ListItem>
+            </StyledListItemButton>
           </List>
 
           <List component="nav" disablePadding>
@@ -143,30 +134,40 @@ function Navbar() {
               <NavItem
                 key={id}
                 path={path}
-                className={classes.item}
                 closeDrawer={closeDrawer}
+                sx={{
+                  width: '100%',
+                  height: NAVBAR_WIDTH,
+                  cursor: 'default'
+                }}
               >
-                <ListItemIcon className={classes.icon}>
-                  <Icon fontSize="large" />
-                </ListItemIcon>
+                <StyledListItemIcon>
+                  <Icon sx={{ fontSize: ICON_SIZE }} />
+                </StyledListItemIcon>
                 <ListItemText primary={id} />
               </NavItem>
             ))}
           </List>
 
           <List disablePadding>
-            <ListItem
+            <StyledListItemButton
               key="Exit"
-              button
               disableGutters
-              className={clsx(classes.item, classes.exit)}
               onClick={() => window.comicsApi.quit()}
+              sx={{
+                '&:hover': {
+                  backgroundColor: theme => alpha(
+                    lighten(theme.palette.error.main, 0.2),
+                    0.5
+                  )
+                }
+              }}
             >
-              <ListItemIcon className={classes.icon}>
-                <PowerSettingsNewIcon fontSize="large" />
-              </ListItemIcon>
+              <StyledListItemIcon>
+                <PowerSettingsNewIcon sx={{ fontSize: ICON_SIZE }} />
+              </StyledListItemIcon>
               <ListItemText primary="Exit" />
-            </ListItem>
+            </StyledListItemButton>
           </List>
         </motion.div>
       </motion.div>

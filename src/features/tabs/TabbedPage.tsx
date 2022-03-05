@@ -1,46 +1,26 @@
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import MuiTab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
-import clsx from 'clsx';
+import Box from '@mui/material/Box';
+import MuiTab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import { SxProps } from '@mui/material/styles';
 import { AnimatePresence } from 'framer-motion';
 import React from 'react';
 
 import { TabProps } from './Tab';
 import TabPanel from './TabPanel';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  tabbedPage: {
-    display: 'flex',
-    flexDirection: 'column',
-    position: 'relative',
-    height: '100%'
-  },
-  tab: {
-    fontSize: 24
-  },
-  tabPanels: {
-    position: 'relative',
-    width: '100%',
-    flexGrow: 1,
-    overflow: 'hidden'
-  }
-}));
-
 interface TabbedPageProps {
   children: React.ReactElement<TabProps> | React.ReactElement<TabProps>[];
   selectedTab?: number;
   onSelectedTabChange?: (index: number) => void;
-  className?: string;
+  sx?: SxProps;
 }
 
 function TabbedPage({
   children,
   selectedTab,
   onSelectedTabChange,
-  className
+  sx
 }: TabbedPageProps) {
-  const classes = useStyles();
-
   const [selectedIndex, setSelectedIndex] = React.useState({
     direction: 0,
     value: selectedTab ?? 0
@@ -58,7 +38,15 @@ function TabbedPage({
   const pages = Array.isArray(children) ? children : [children];
 
   return (
-    <div className={clsx(classes.tabbedPage, className)}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+        height: '100%',
+        ...sx
+      }}
+    >
       <Tabs
         value={selectedIndex.value}
         onChange={(event, value) => {
@@ -78,19 +66,25 @@ function TabbedPage({
           <MuiTab
             key={child.props.label}
             label={child.props.label}
-            className={classes.tab}
+            sx={{ fontSize: 24 }}
           />
         ))}
       </Tabs>
 
-      <div className={classes.tabPanels}>
+      <Box
+        sx={{
+          position: 'relative',
+          width: '100%',
+          flexGrow: 1
+        }}
+      >
         <AnimatePresence initial={false} custom={selectedIndex.direction}>
           <TabPanel key={selectedIndex.value} direction={selectedIndex.direction}>
             {pages[selectedIndex.value]}
           </TabPanel>
         </AnimatePresence>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 

@@ -1,4 +1,3 @@
-import { makeStyles, Theme } from '@material-ui/core/styles';
 import { clamp } from '@popmotion/popcorn';
 import { EntityId } from '@reduxjs/toolkit';
 import { animate, motion, Spring, useMotionValue, Variants } from "framer-motion";
@@ -15,14 +14,6 @@ import {
   ObjectPosition,
   Size
 } from 'utils';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  item: {
-    position: "absolute",
-    width: "100%",
-    height: "100%"
-  }
-}));
 
 const variants: Variants = {
   initial: (direction: number) => ({
@@ -107,7 +98,6 @@ function FlipViewItem({
   zoom,
   onPageFlip
 }: FlipViewItemProps) {
-  const classes = useStyles();
   const image = useSelector(selectImage(pageId));
   const [entered, setEntered] = React.useState(false);
 
@@ -215,8 +205,13 @@ function FlipViewItem({
           }
         }
       }}
-      style={{ x, y }}
-      className={classes.item}
+      style={{
+        x,
+        y,
+        position: "absolute",
+        width: "100%",
+        height: "100%"
+      }}
     >
       <FlipViewImage
         src={image?.url}

@@ -1,5 +1,4 @@
-import { ThemeProvider } from '@material-ui/core/styles';
-import type { } from '@material-ui/lab/themeAugmentation';
+import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import ReactDOM from 'react-dom';

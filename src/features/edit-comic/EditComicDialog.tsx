@@ -1,26 +1,12 @@
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import IconButton from '@material-ui/core/IconButton';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
+import CloseIcon from '@mui/icons-material/Close';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
 import { EntityId } from '@reduxjs/toolkit';
 import React from 'react';
 
 import EditComicForm from './EditComicForm';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: "100%"
-    },
-    cancelButton: {
-      position: "absolute",
-      top: theme.spacing(1),
-      right: theme.spacing(1)
-    }
-  })
-);
 
 interface EditComicDialogProps {
   title: string;
@@ -30,8 +16,7 @@ interface EditComicDialogProps {
 }
 
 export function EditComicDialog({ title, buttonText, buttonIcon, comicId }: EditComicDialogProps) {
-  const classes = useStyles();
-  const [isOpen, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
 
   const handleClose = () => {
     setOpen(false);
@@ -44,9 +29,12 @@ export function EditComicDialog({ title, buttonText, buttonIcon, comicId }: Edit
       </Button>
 
       <Dialog
-        open={isOpen}
-        onClose={handleClose}
-        disableBackdropClick
+        open={open}
+        onClose={(_event, reason) => {
+          if (reason !== 'backdropClick') {
+            handleClose();
+          }
+        }}
         disableEscapeKeyDown
         keepMounted={false}
         maxWidth="sm"
@@ -54,8 +42,15 @@ export function EditComicDialog({ title, buttonText, buttonIcon, comicId }: Edit
       >
         <DialogTitle>{title}</DialogTitle>
 
-        <IconButton onClick={handleClose} className={classes.cancelButton}>
-          <CloseIcon fontSize="default" />
+        <IconButton
+          onClick={handleClose}
+          sx={{
+            position: "absolute",
+            top: theme => theme.spacing(1),
+            right: theme => theme.spacing(1)
+          }}
+        >
+          <CloseIcon sx={{ fontSize: 32 }} />
         </IconButton>
 
         <EditComicForm comicId={comicId} />

@@ -1,4 +1,4 @@
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
 import { AnimatePresence } from 'framer-motion';
 import React from 'react';
 import { Route, Switch, useLocation, useRouteMatch } from 'react-router-dom';
@@ -7,15 +7,6 @@ import Detail from './Detail';
 import Item from './Item';
 import Master from './Master';
 import Placeholder from './Placeholder';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  masterDetail: {
-    display: "flex",
-    flexDirection: "row",
-    width: "100%",
-    height: "100%"
-  }
-}));
 
 interface MasterDetailViewProps<T> {
   items: T[];
@@ -32,7 +23,6 @@ function MasterDetailView<T extends Item>({
   MasterToolbar,
   DetailToolbar
 }: MasterDetailViewProps<T>) {
-  const classes = useStyles();
   const location = useLocation<{ direction?: string }>();
   const { path } = useRouteMatch();
 
@@ -42,7 +32,7 @@ function MasterDetailView<T extends Item>({
   }, [location.state]);
 
   return (
-    <div className={classes.masterDetail}>
+    <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
       <Master
         items={items}
         ItemTemplate={MasterItemTemplate}
@@ -64,7 +54,7 @@ function MasterDetailView<T extends Item>({
           </Route>
         </Switch>
       </AnimatePresence>
-    </div>
+    </Box>
   );
 }
 

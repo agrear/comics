@@ -1,21 +1,8 @@
-import Slider from '@material-ui/core/Slider';
-import { darken, makeStyles, Theme } from '@material-ui/core/styles';
-import WbIncandescentIcon from '@material-ui/icons/WbIncandescent';
+import WbIncandescentIcon from '@mui/icons-material/WbIncandescent';
+import Slider from '@mui/material/Slider';
 import React from 'react';
 
 import Flyout from '../flyout/Flyout';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  button: {
-    minWidth: 88
-  },
-  brightness: {
-    height: 200,
-    width: 80,
-    padding: theme.spacing(2.5, 0.5),
-    background: darken(theme.palette.background.paper, 0.15)
-  }
-}));
 
 const marks = [25, 50, 75, 100, 125].map(value => ({
   value,
@@ -29,8 +16,6 @@ interface BrightnessProps {
 }
 
 export function Brightness({ value, onChange, onClose }: BrightnessProps) {
-  const classes = useStyles();
-
   // TODO: Fix white space padding issue
   const getText = (value: number) => `${value.toFixed(0)}%`.padStart(4);
 
@@ -39,23 +24,30 @@ export function Brightness({ value, onChange, onClose }: BrightnessProps) {
       buttonProps={{
         startIcon: <WbIncandescentIcon />,
         children: getText(value),
-        className: classes.button
+        sx: { minWidth: 88 }
       }}
       onClose={onClose}
+      paperProps={{
+        sx: {
+          height: 240,
+          width: 80,
+          px: 2,
+          py: 3
+        }
+      }}
     >
-      <div className={classes.brightness}>
-        <Slider
-          orientation="vertical"
-          defaultValue={100}
-          value={value}
-          step={5}
-          marks={marks}
-          min={25}
-          max={125}
-          onChange={(e, v) => onChange(v as number)}
-          getAriaValueText={getText}
-        />
-      </div>
+      <Slider
+        orientation="vertical"
+        defaultValue={100}
+        value={value}
+        step={5}
+        marks={marks}
+        min={25}
+        max={125}
+        onChange={(e, v) => onChange(v as number)}
+        getAriaValueText={getText}
+        valueLabelDisplay="auto"
+      />
     </Flyout>
   );
 }

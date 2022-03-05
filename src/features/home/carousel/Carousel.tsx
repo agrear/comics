@@ -1,4 +1,3 @@
-import { makeStyles, Theme } from '@material-ui/core/styles';
 import { clamp, snap } from '@popmotion/popcorn';
 import { EntityId } from '@reduxjs/toolkit';
 import {
@@ -11,24 +10,6 @@ import React from 'react';
 
 import Cover from './Cover';
 import Image from './Image';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    position: "relative",
-    width: "100%",
-    height: "100%",
-    overflow: "hidden"
-  },
-  panel: {
-    display: "flex",
-    height: "100%",
-    alignItems: "center",
-    listStyle: "none",
-    margin: 0,
-    padding: 0,
-    perspective: 800
-  }
-}));
 
 const itemWidth = 400;
 const itemHeight = 400;
@@ -60,7 +41,6 @@ function Carousel<T>({
   selectImage,
   entering
 }: CarouselProps<T>) {
-  const classes = useStyles();
   const controls = useAnimation();
 
   const selectedIndex = React.useMemo(() => {
@@ -113,13 +93,15 @@ function Carousel<T>({
   }, [items, onSelectedItemChange, x]);
 
   return (
-    <motion.div className={classes.root}>
+    <motion.div
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden'
+      }}
+    >
       <motion.ul
-        style={{
-          perspectiveOrigin,
-          width: `calc(100% + ${contentWidth}px)`,
-          x
-        }}
         animate={controls}
         drag="x"
         dragConstraints={{
@@ -133,7 +115,18 @@ function Carousel<T>({
           timeConstant: 160,
           modifyTarget: snapTo
         }}
-        className={classes.panel}
+        style={{
+          perspectiveOrigin,
+          width: `calc(100% + ${contentWidth}px)`,
+          display: 'flex',
+          height: '100%',
+          alignItems: 'center',
+          listStyle: 'none',
+          margin: 0,
+          padding: 0,
+          perspective: 800,
+          x
+        }}
       >
         {items.map((item, i) => (
           <Cover

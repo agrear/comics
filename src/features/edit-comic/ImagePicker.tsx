@@ -1,63 +1,14 @@
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Input, { InputProps } from '@material-ui/core/Input';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import ImageIcon from '@material-ui/icons/Image';
+import Box from '@mui/material/Box';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import Input, { InputProps } from '@mui/material/Input';
+import Typography from '@mui/material/Typography';
+import GetAppIcon from '@mui/icons-material/GetApp';
+import ImageIcon from '@mui/icons-material/Image';
 import { useField } from 'formik';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
 import React from 'react';
 import { useDropzone } from 'react-dropzone';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      position: 'relative',
-      width: 400,
-      height: 400,
-      border: '2px dashed',
-      borderRadius: '10px',
-      outline: 'none',
-      cursor: 'pointer',
-      userSelect: 'none',
-      overflow: 'hidden'
-    },
-    input: {
-      position: 'absolute',
-      width: '100%',
-      height: '100%',
-      opacity: 0
-    },
-    image: {
-      position: 'absolute',
-      objectFit: 'contain',
-      maxWidth: '100%',
-      maxHeight: '100%'
-    },
-    overlay: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      position: 'absolute',
-      width: '100%',
-      height: '100%',
-      background: 'hsla(0, 0%, 13%, 0.75)',
-      zIndex: 2
-    },
-    center: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center'
-    },
-    text: {
-      whiteSpace: 'pre-line'
-    }
-  })
-);
 
 const imageVariants: Variants = {
   initial: {
@@ -106,36 +57,54 @@ const overlayVariants: Variants = {
 };
 
 function DropIndicator() {
-  const classes = useStyles();
-
   return (
     <motion.div
       initial="initial"
       animate="enter"
       exit="exit"
       variants={overlayVariants}
-      className={classes.overlay}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        background: 'hsla(0, 0%, 13%, 0.75)',
+        zIndex: 2
+      }}
     >
-      <div className={classes.center}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center'
+        }}
+      >
         <GetAppIcon fontSize="large" />
-        <Typography align="center" className={classes.text}>
+        <Typography align="center" sx={{ whiteSpace: 'pre-line' }}>
           Drop image here
         </Typography>
-      </div>
+      </Box>
     </motion.div>
   );
 }
 
 function Placeholder({ isDragActive }: { isDragActive: boolean }) {
-  const classes = useStyles();
-
   return (
-    <div className={classes.center}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
+      }}
+    >
       {isDragActive ? <GetAppIcon fontSize="large" /> : <ImageIcon fontSize="large" />}
-      <Typography align="center" className={classes.text}>
+      
+      <Typography align="center" sx={{ whiteSpace: 'pre-line' }}>
         {isDragActive ? 'Drop image here' : 'Click to browse or\ndrag image here'}
       </Typography>
-    </div>
+    </Box>
   );
 }
 
@@ -144,7 +113,6 @@ export interface ImagePickerProps extends InputProps {
 }
 
 export function ImagePicker({ label, ...props }: ImagePickerProps) {
-  const classes = useStyles();
   const [field, meta, helpers] = useField(props as any);
   const [key, setKey] = React.useState(Math.random());
   const [isMounting, setIsMounting] = React.useState(true);
@@ -179,22 +147,38 @@ export function ImagePicker({ label, ...props }: ImagePickerProps) {
     onDrop
   });
 
-  const { color: rootColor, ...rootProps } = getRootProps({
-    className: classes.root
+  const { color: _rootColor, ...rootProps } = getRootProps({
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'relative',
+      width: 400,
+      height: 400,
+      border: '2px dashed',
+      borderRadius: '10px',
+      outline: 'none',
+      cursor: 'pointer',
+      userSelect: 'none',
+      overflow: 'hidden'
+    }
   });
 
-  const { color: inputColor, style, ...inputProps } = getInputProps({
-    className: classes.input
+  const { color: _inputColor, ...inputProps } = getInputProps({
+    style: {
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      opacity: 0
+    }
   });
 
   return (
     <FormControl error={meta.touched && meta.error !== undefined} {...rootProps}>
-      <Input
-        inputProps={{...inputProps}}
-        {...props}
-        className={classes.input}
-      />
+      <Input inputProps={{...inputProps}} {...props} />
+      
       {field.value === null ? <Placeholder isDragActive={isDragActive} /> : null}
+      
       <AnimatePresence>
         <motion.img
           key={key}
@@ -204,10 +188,17 @@ export function ImagePicker({ label, ...props }: ImagePickerProps) {
           animate={field.value !== null ? 'enter' : 'initial'}
           exit="exit"
           variants={imageVariants}
-          className={classes.image}
+          style={{
+            position: 'absolute',
+            objectFit: 'contain',
+            maxWidth: '100%',
+            maxHeight: '100%'
+          }}
         />
+        
         {field.value !== null && isDragActive ? <DropIndicator key="overlay" /> : null}
       </AnimatePresence>
+      
       {meta.touched && meta.error && (
         <FormHelperText>{meta.error}</FormHelperText>
       )}

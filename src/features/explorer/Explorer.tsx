@@ -1,4 +1,4 @@
-import { makeStyles, Theme, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@mui/material/styles';
 import { clamp, snap } from '@popmotion/popcorn';
 import {
   animate,
@@ -25,52 +25,6 @@ import SelectWebpageDialog from './SelectWebpageDialog';
 import SelectPageNumberDialog from './SelectPageNumberDialog';
 import { Comic, Page } from '../comic/comicSlice';
 
-interface StyleProps {
-  height: number;
-  parentHeight: number;
-  pageHeight: number;
-  spacing: number;
-}
-
-const useStyles = makeStyles((theme: Theme) => ({
-  explorer: ({ height, parentHeight, pageHeight, spacing }: StyleProps) => ({
-    position: 'relative',
-    display: 'grid',
-    gridRowGap: theme.spacing(spacing),
-    justifyContent: 'center',
-    width: '100%',
-    height,
-    listStyle: 'none',
-    padding: `${(parentHeight - pageHeight) / 2}px 0`,
-    margin: 0
-  }),
-  scrollbar: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    width: theme.spacing(2),
-    borderLeft: '1px solid',
-    borderColor: theme.palette.grey[500],
-    boxSizing: 'content-box'
-  },
-  thumb: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    height: theme.spacing(6),
-    width: theme.spacing(2),
-    backgroundColor: theme.palette.grey[700],
-    cursor: 'pointer',
-    '&:hover': {
-      backgroundColor: theme.palette.grey[500]
-    },
-    '&:active': {
-      backgroundColor: theme.palette.grey[500]
-    }
-  }
-}));
-
 const pageWidth = 240;
 const pageHeight = 340;
 
@@ -94,23 +48,16 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
     comic.bookmark
   );
 
-  const itemDistance = pageHeight + theme.spacing(spacing);
+  const itemDistance = pageHeight + parseInt(theme.spacing(spacing));
   const dragDistance = Math.max(
-    0, comic.pages.length * itemDistance - theme.spacing(spacing)
+    0, comic.pages.length * itemDistance - parseInt(theme.spacing(spacing))
   );
-
-  const classes = useStyles({
-    height: dragDistance,
-    parentHeight,
-    pageHeight,
-    spacing
-  });
 
   const y = useMotionValue<number>(
     clamp(0, comic.pages.length, selectedIndex) * -itemDistance
   );
 
-  const thumbHeight = theme.spacing(6);
+  const thumbHeight = parseInt(theme.spacing(6));
   const scrollbarHeight = (scrollbar?.current?.clientHeight ?? 0) - thumbHeight;
   const scrollY = useMotionValue<number>(0);
 
@@ -249,7 +196,6 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
           timeConstant: 120,
           modifyTarget: snapTo
         }}
-        style={{ y }}
         onDrag={(event, info) => {
           const percentage = y.get() / -dragDistance;
           scrollY.set(percentage * scrollbarHeight);
@@ -261,7 +207,18 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
             Math.round(selectedIndex + event.deltaY / 100)
           ));
         }}
-        className={classes.explorer}
+        style={{
+          position: 'relative',
+          display: 'grid',
+          gridRowGap: theme.spacing(spacing),
+          justifyContent: 'center',
+          width: '100%',
+          height: dragDistance,
+          listStyle: 'none',
+          padding: `${(parentHeight - pageHeight) / 2}px 0`,
+          margin: 0,
+          y
+        }}
       >
         <AnimatePresence initial={false}>
           {items}
@@ -270,7 +227,6 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
 
       <motion.div
         ref={scrollbar}
-        className={classes.scrollbar}
         onTap={(event, info) => {
           if (event.target !== scrollbar?.current) {
             return;
@@ -287,17 +243,37 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
           y.set(percentage * -dragDistance);
           scrollY.set(top);
         }}
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          width: theme.spacing(2),
+          borderLeft: '1px solid',
+          borderColor: theme.palette.grey[500],
+          boxSizing: 'content-box'
+        }}
       >
         <motion.div
           drag="y"
           dragConstraints={scrollbar}
           dragElastic={false}
           dragMomentum={false}
-          style={{ y: scrollY }}
-          className={classes.thumb}
           onDrag={(event, info) => {
             const percentage = scrollY.get() / scrollbarHeight;
             y.set(percentage * -dragDistance);
+          }}
+          whileHover={{ backgroundColor: theme.palette.grey[500] }}
+          whileTap={{ backgroundColor: theme.palette.grey[500] }}
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            height: theme.spacing(6),
+            width: theme.spacing(2),
+            backgroundColor: theme.palette.grey[700],
+            cursor: 'pointer',
+            y: scrollY
           }}
         />
       </motion.div>

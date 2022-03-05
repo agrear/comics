@@ -1,5 +1,4 @@
-import Badge from '@material-ui/core/Badge';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import Badge from '@mui/material/Badge';
 import { clamp, interpolate } from '@popmotion/popcorn';
 import {
   motion,
@@ -12,15 +11,6 @@ import React from 'react';
 
 import Image from './Image';
 import { fitObjectSize } from 'utils';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  item: {
-    boxSizing: "border-box"
-  },
-  anchor: {
-    transform: 'scale(1.5) translate(50%, 50%)'
-  }
-}));
 
 const interpolateAngle = interpolate([-1, 0, 1], [10, 0, -10]);
 const interpolateScale = interpolate([-1, 0, 1], [0.8, 1.2, 0.8]);
@@ -52,7 +42,6 @@ export function Cover({
   onTap,
   entering
 }: CoverProps) {
-  const classes = useStyles();
   const controls = useAnimation();
   const [isPresent, safeToRemove] = usePresence();
 
@@ -155,18 +144,21 @@ export function Cover({
       style={{
         marginLeft: `calc(${offset} + ${margin}px)`,
         marginRight: margin,
+        boxSizing: 'border-box',
         rotateY,
         scale
       }}
-      className={classes.item}
     >
       <Badge
         component={motion.span}
         badgeContent={badgeContent}
-        max={99}
         color="primary"
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        classes={{ anchorOriginBottomRightRectangle: classes.anchor }}
+        sx={{
+          '& .MuiBadge-anchorOriginBottomRightRectangular': {
+            transform: 'scale(1.5) translate(50%, 50%)'
+          }
+        }}
       >
         <motion.img
           src={cover.url}

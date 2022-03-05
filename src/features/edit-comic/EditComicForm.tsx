@@ -1,4 +1,4 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
 import { EntityId } from '@reduxjs/toolkit';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,17 +9,6 @@ import { comicEditFormSubmitted, selectComic } from '../comic/comicSlice';
 import TextField from '../form/TextField';
 import Wizard from '../form/Wizard';
 import { identity } from 'utils';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    center: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    height: "100%"
-  }
-  })
-);
 
 const steps = [
   {
@@ -60,7 +49,6 @@ interface EditComicFormProps {
 }
 
 export function EditComicForm({ comicId }: EditComicFormProps) {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const comic = useSelector(selectComic(comicId));
 
@@ -114,9 +102,16 @@ export function EditComicForm({ comicId }: EditComicFormProps) {
           placeholder="Tag 1, Tag 2, ..."
         />
       </>
-      <div className={classes.center}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%'
+        }}
+      >
         <ImagePicker label="Cover" name="cover" />
-      </div>
+      </Box>
     </Wizard>
   );
 }

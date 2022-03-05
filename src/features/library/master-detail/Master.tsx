@@ -1,6 +1,6 @@
-import { Theme, makeStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import { EntityId } from '@reduxjs/toolkit';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
 import React from 'react';
@@ -8,28 +8,6 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import Item from './Item';
 import ToolbarTemplate from './ToolbarTemplate';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  master: {
-    display: "flex",
-    flexDirection: "column",
-    flex: "0 0 320px",
-    height: "100%"
-  },
-  list: {
-    flex: "1 1 100%",
-    width: "100%",
-    overflowX: 'hidden',
-    overflowY: 'auto'
-  },
-  item: {
-    width: 320,
-    overflow: "hidden"
-  },
-  text: {
-    textOverflow: "ellipsis"
-  }
-}));
 
 const list: Variants = {
   initial: {},
@@ -62,7 +40,6 @@ export function Master<T extends Item>({
   ItemTemplate,
   Toolbar
 }: MasterProps<T>) {
-  const classes = useStyles();
   const history = useHistory();
   const { url } = useRouteMatch();
 
@@ -91,7 +68,14 @@ export function Master<T extends Item>({
   }, [items]);
 
   return (
-    <div className={classes.master}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        flex: '0 0 320px',
+        height: '100%'
+      }}
+    >
       <AnimatePresence>
         <List
           disablePadding
@@ -99,7 +83,12 @@ export function Master<T extends Item>({
           variants={list}
           initial="initial"
           animate="enter"
-          className={classes.list}
+          sx={{
+            flex: '1 1 100%',
+            width: '100%',
+            overflowX: 'hidden',
+            overflowY: 'auto'
+          }}
         >
           {items.map(item => (
             <ListItem
@@ -118,7 +107,10 @@ export function Master<T extends Item>({
                   return item;
                 });
               }}
-              className={classes.item}
+              sx={{
+                width: 320,
+                overflow: 'hidden'
+              }}
             >
               <ItemTemplate {...item} />
             </ListItem>
@@ -129,7 +121,7 @@ export function Master<T extends Item>({
       <ToolbarTemplate>
         <Toolbar items={items} />
       </ToolbarTemplate>
-    </div>
+    </Box>
   );
 }
 

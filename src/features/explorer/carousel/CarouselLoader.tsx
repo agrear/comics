@@ -1,7 +1,7 @@
-import CircularProgress from '@material-ui/core/CircularProgress';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Tooltip from '@material-ui/core/Tooltip';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Tooltip from '@mui/material/Tooltip';
 import { AnimatePresence } from 'framer-motion';
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -12,22 +12,6 @@ import {
   RequestType,
   selectDownloader
 } from '../../downloader/downloaderSlice';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  tooltip: {
-    maxWidth: theme.breakpoints.values.md
-  },
-  loader: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
-}));
 
 interface CarouselLoaderProps {
   page: Page | null;
@@ -40,8 +24,6 @@ export function CarouselLoader({
   children,
   onCancel
 }: CarouselLoaderProps) {
-  const classes = useStyles();
-
   const downloader = useSelector(selectDownloader);
   const webpageImages = useSelector(selectWebpageImages);
 
@@ -77,11 +59,26 @@ export function CarouselLoader({
             disableTouchListener
             open={loading}
             placement="top"
-            classes={{ tooltip: classes.tooltip }}
+            sx={{
+              '& .MuiTooltip-tooltip': {
+                maxWidth: theme => theme.breakpoints.values.md
+              }
+            }}
           >
-            <div className={classes.loader}>
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
               <CircularProgress />
-            </div>
+            </Box>
           </Tooltip>
         </ClickAwayListener>
       ) : children}

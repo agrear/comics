@@ -1,34 +1,19 @@
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import IconButton from '@material-ui/core/IconButton';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
-import SettingsOverscanIcon from '@material-ui/icons/SettingsOverscan';
+import CloseIcon from '@mui/icons-material/Close';
+import SettingsOverscanIcon from '@mui/icons-material/SettingsOverscan';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
 import React from 'react';
 
 import LayoutForm from './LayoutForm';
 import { Comic } from '../comicSlice';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    dialog: {
-      userSelect: "none"
-    },
-    cancelButton: {
-      position: "absolute",
-      top: theme.spacing(1),
-      right: theme.spacing(1)
-    }
-  })
-);
 
 interface LayoutDialogProps {
   comic: Comic;
 }
 
 export function LayoutDialog({ comic }: LayoutDialogProps) {
-  const classes = useStyles();
   const [isOpen, setOpen] = React.useState(false);
 
   const handleClose = () => {
@@ -46,12 +31,19 @@ export function LayoutDialog({ comic }: LayoutDialogProps) {
         onClose={handleClose}
         maxWidth="sm"
         fullWidth
-        className={classes.dialog}
+        sx={{ userSelect: "none" }}
       >
         <DialogTitle>Page Layout</DialogTitle>
 
-        <IconButton onClick={handleClose} className={classes.cancelButton}>
-          <CloseIcon fontSize="default" />
+        <IconButton
+          onClick={handleClose}
+          sx={{
+            position: 'absolute',
+            top: 1,
+            right: 1
+          }}
+        >
+          <CloseIcon sx={{ fontSize: 'medium' }} />
         </IconButton>
 
         <LayoutForm comicId={comic.id} layout={comic.layout} onSubmit={handleClose} />

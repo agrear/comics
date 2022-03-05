@@ -1,4 +1,3 @@
-import { makeStyles, Theme } from '@material-ui/core/styles';
 import { clamp } from '@popmotion/popcorn';
 import { AnimatePresence, motion } from 'framer-motion';
 import React from 'react';
@@ -15,25 +14,7 @@ import {
   selectComic
 } from './comicSlice';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  comic: {
-    position: 'relative',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    height: '100%',
-    outline: 'none'
-  },
-  flipView: {
-    width: '100%',
-    flexGrow: 1
-  }
-}));
-
 export function Comic() {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
   const { comicId } = useParams<{ comicId: string }>();
@@ -94,7 +75,16 @@ export function Comic() {
         }
       }}
       tabIndex={0}
-      className={classes.comic}
+      style={{
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '100%',
+        outline: 'none'
+      }}
     >
       <Toolbar
         key="toolbar"

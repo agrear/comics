@@ -1,16 +1,5 @@
-import { makeStyles, Theme } from '@material-ui/core/styles';
 import { motion, Variants } from 'framer-motion';
 import React from 'react';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  tabPanel: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0
-  }
-}));
 
 const variants: Variants = {
   initial: (direction: number) => ({
@@ -57,8 +46,6 @@ interface TabPanelProps {
 }
 
 function TabPanel({ children, direction }: TabPanelProps) {
-  const classes = useStyles();
-
   return (
     <motion.div
       variants={variants}
@@ -66,7 +53,13 @@ function TabPanel({ children, direction }: TabPanelProps) {
       initial="initial"
       animate="enter"
       exit="exit"
-      className={classes.tabPanel}
+      style={{
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0
+      }}
     >
       {children}
     </motion.div>

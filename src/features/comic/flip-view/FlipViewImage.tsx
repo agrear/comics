@@ -1,14 +1,7 @@
-import { makeStyles, Theme } from '@material-ui/core/styles';
 import { animate, motion, Spring, useMotionValue } from 'framer-motion';
 import React from 'react';
 
 import { ObjectFit, ObjectPosition, Point, Size } from 'utils';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  image: ({ brightness }: { brightness: number }) => ({
-    filter: `brightness(${brightness})`
-  })
-}));
 
 const spring: Spring = {
   type: 'spring',
@@ -39,8 +32,6 @@ function FlipViewImage({
   animateLayout,
   onDoubleClick
 }: FlipViewImageProps) {
-  const classes = useStyles({ brightness });
-
   const x = useMotionValue<number>(0);
   const y = useMotionValue<number>(0);
   const width = useMotionValue<number>(size.width);
@@ -71,9 +62,14 @@ function FlipViewImage({
       src={src}
       alt=""
       draggable={false}
-      style={{ x, y, width, height }}
+      style={{
+        x,
+        y,
+        width,
+        height,
+        filter: `brightness(${brightness})`
+      }}
       onDoubleClick={onDoubleClick}
-      className={classes.image}
     />
   );
 }

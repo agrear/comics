@@ -1,10 +1,9 @@
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
-import ExploreIcon from '@material-ui/icons/Explore';
+import CloseIcon from '@mui/icons-material/Close';
+import ExploreIcon from '@mui/icons-material/Explore';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import IconButton from '@mui/material/IconButton';
 import React from 'react';
 import Measure from 'react-measure';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,33 +17,11 @@ import Explorer from './Explorer';
 import Overlay from './Overlay';
 import { Comic } from '../comic/comicSlice';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  dialog: {
-    userSelect: "none"
-  },
-  paper: {
-    backgroundColor: theme.palette.background.default,
-    boxShadow: 'none'
-  },
-  closeButton: {
-    position: "absolute",
-    top: theme.spacing(1),
-    right: theme.spacing(3),
-    zIndex: 1
-  },
-  content: {
-    position: 'relative',
-    overflow: "hidden",
-    padding: 0
-  }
-}));
-
 interface ExplorerDialogProps {
   comic: Comic;
 }
 
 export function ExplorerDialog({ comic }: ExplorerDialogProps) {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const id = useSelector(selectExplorerId);
 
@@ -71,16 +48,36 @@ export function ExplorerDialog({ comic }: ExplorerDialogProps) {
         onClose={handleClose}
         fullScreen
         keepMounted={false}
-        PaperProps={{ className: classes.paper }}
-        className={classes.dialog}
+        PaperProps={{
+          sx: {
+            backgroundColor: theme => theme.palette.background.default,
+            boxShadow: 'none'
+          }
+        }}
+        sx={{ userSelect: 'none' }}
       >
-        <IconButton onClick={handleClose} className={classes.closeButton}>
+        <IconButton
+          onClick={handleClose}
+          sx={{
+            position: 'absolute',
+            top: theme => theme.spacing(1),
+            right: theme => theme.spacing(3),
+            zIndex: 1
+          }}
+        >
           <CloseIcon />
         </IconButton>
 
         <Measure client>
           {({ measureRef, contentRect: { client } }) => (
-            <DialogContent ref={measureRef} className={classes.content}>
+            <DialogContent
+              ref={measureRef}
+              sx={{
+                position: 'relative',
+                overflow: 'hidden',
+                p: 0
+              }}
+            >
               <Explorer comic={comic} parentHeight={client?.height ?? 0} />
 
               <Overlay comic={comic} />

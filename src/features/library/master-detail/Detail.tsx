@@ -1,41 +1,13 @@
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import { Theme, makeStyles } from '@material-ui/core/styles';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Box from '@mui/material/Box';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import Typography from '@material-ui/core/Typography';
-import DeleteIcon from '@material-ui/icons/Delete';
 import { motion, Variants } from 'framer-motion';
 import React from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 
 import Item from './Item';
 import ToolbarTemplate from './ToolbarTemplate';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  detail: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "stretch",
-    justifyContent: "stretch",
-    width: "100%",
-    height: "100%"
-  },
-  item: {
-    display: 'flex',
-    flexDirection: 'column',
-    flexGrow: 1
-  },
-  message: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    height: "100%"
-  },
-  icon: {
-    minWidth: "initial",
-    padding: 0
-  }
-}));
 
 const variants: Variants = {
   initial: (direction: number) => ({
@@ -75,7 +47,6 @@ export function Detail<T extends Item>({
   ItemTemplate,
   Toolbar
 }: DetailProps<T>) {
-  const classes = useStyles();
   const location = useLocation<{ direction?: string }>();
   const { comicId } = useParams<{ comicId: string }>();
 
@@ -93,9 +64,16 @@ export function Detail<T extends Item>({
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className={classes.message}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          height: '100%'
+        }}
       >
-        <ListItemIcon className={classes.icon}>
+        <ListItemIcon sx={{ minWidth: 'initial', p: 0 }}>
           <DeleteIcon />
         </ListItemIcon>
         <Typography variant="h4">
@@ -108,16 +86,23 @@ export function Detail<T extends Item>({
   return (
     <motion.div
       key={selectedItem.id}
-      className={classes.detail}
       initial="initial"
       animate="enter"
       exit="exit"
       variants={variants}
       custom={direction}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        justifyContent: 'stretch',
+        width: '100%',
+        height: '100%'
+      }}
     >
-      <div className={classes.item}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
         {ItemTemplate(selectedItem)}
-      </div>
+      </Box>
       <ToolbarTemplate>
         <Toolbar {...selectedItem} />
       </ToolbarTemplate>

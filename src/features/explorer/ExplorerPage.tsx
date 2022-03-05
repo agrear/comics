@@ -1,14 +1,9 @@
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import {
-  fade,
-  lighten,
-  makeStyles,
-  Theme
-} from '@material-ui/core/styles';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import ImageIcon from '@material-ui/icons/Image';
-import SwapVertIcon from '@material-ui/icons/SwapVert';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import ImageIcon from '@mui/icons-material/Image';
+import SwapVertIcon from '@mui/icons-material/SwapVert';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import { alpha, lighten, styled } from '@mui/material/styles';
 import { AnimatePresence, motion } from 'framer-motion';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -28,49 +23,16 @@ import {
   selectWebpageSelected
 } from './explorerSlice';
 import Toolbar from './Toolbar';
+import ToolbarButton, { ToolbarButtonProps } from './ToolbarButton';
 import { Page } from '../comic/comicSlice';
 import { selectImage } from '../comic/imageSlice';
 
-interface StyleProps {
-  top: number;
-  width: number;
-  height: number;
-}
-
-export const useStyles = makeStyles((theme: Theme) => ({
-  page: ({ top, width, height }: StyleProps) => ({
-    position: 'absolute',
-    top,
-    left: 0,
-    right: 0,
-    width,
-    height,
-    boxSizing: 'border-box',
-    marginLeft: 'auto',
-    marginRight: 'auto'
-  }),
-  image: ({ width, height }: StyleProps) => ({
-    position: 'relative',
-    width,
-    height,
-    objectFit: 'cover',
-    zIndex: 1
-  }),
-  icon: {
-    fontSize: theme.spacing(8),
-    pointerEvents: 'none'
-  },
-  toolbarButton: {
-    backgroundColor: fade(lighten(theme.palette.background.paper, 0.2), 0.5),
-    "&:hover": {
-      backgroundColor: fade(lighten(theme.palette.background.paper, 0.4), 0.5)
-    }
-  },
-  toolbarButtonDelete: {
-    backgroundColor: fade(lighten(theme.palette.error.main, 0.2), 0.5),
-    "&:hover": {
-      backgroundColor: fade(lighten(theme.palette.error.main, 0.4), 0.5)
-    }
+const StyledToolbarButton = styled(
+  ToolbarButton
+)<ToolbarButtonProps>(({ theme }) => ({
+  backgroundColor: alpha(lighten(theme.palette.background.paper, 0.2), 0.5),
+  '&:hover': {
+    backgroundColor: alpha(lighten(theme.palette.background.paper, 0.4), 0.5)
   }
 }));
 
@@ -93,7 +55,6 @@ export function ExplorerPage({
   selected,
   onTap
 }: ExplorerPageProps) {
-  const classes = useStyles({ top, width, height });
   const dispatch = useDispatch();
 
   const image = useSelector(selectImage(page.id));
@@ -150,53 +111,85 @@ export function ExplorerPage({
           }
         }}
         whileHover={{ cursor: selected ? 'default' : 'pointer' }}
-        className={classes.page}
+        style={{
+          position: 'absolute',
+          top,
+          left: 0,
+          right: 0,
+          width,
+          height,
+          boxSizing: 'border-box',
+          marginLeft: 'auto',
+          marginRight: 'auto'
+        }}
       >
         {page ? (
           <img
             src={image.url}
             alt=""
             draggable={false}
-            className={classes.image}
             style={{
-              opacity: selected && navigation === 'selectImage' ? 0.25 : 1
+              position: 'relative',
+              width,
+              height,
+              objectFit: 'cover',
+              opacity: selected && navigation === 'selectImage' ? 0.25 : 1,
+              zIndex: 1
             }}
           />
-        ) : <DeleteIcon className={classes.icon} />}
+        ) : (
+          <DeleteIcon
+            sx={{
+              fontSize: theme => theme.spacing(8),
+              pointerEvents: 'none'
+            }}
+          />
+        )}
 
         <AnimatePresence>
           {selected && navigation === 'showOptions' && (
             <Toolbar>
-              {[
-                {
-                  id: 'edit',
-                  tooltip: 'Change node',
-                  className: classes.toolbarButton,
-                  onTap: () => dispatch(selectWebpageSelected()),
-                  children: <EditIcon />
-                },
-                {
-                  id: 'editImage',
-                  tooltip: 'Change image',
-                  className: classes.toolbarButton,
-                  onTap: () => dispatch(selectImageSelected()),
-                  children: <ImageIcon />
-                },
-                {
-                  id: 'reorder',
-                  tooltip: 'Change order',
-                  className: classes.toolbarButton,
-                  onTap: () => dispatch(editPageNumberSelected()),
-                  children: <SwapVertIcon />
-                },
-                {
-                  id: 'delete',
-                  tooltip: 'Delete page',
-                  className: classes.toolbarButtonDelete,
-                  onTap: () => dispatch(deletePageSelected()),
-                  children: <DeleteIcon />
-                }
-              ]}
+              <StyledToolbarButton
+                key="edit"
+                tooltip="Change node"
+                onTap={() => dispatch(selectWebpageSelected())}
+              >
+                <EditIcon />
+              </StyledToolbarButton>
+
+              <StyledToolbarButton
+                key="editImage"
+                tooltip="Change image"
+                onTap={() => dispatch(selectImageSelected())}
+              >
+                <ImageIcon />
+              </StyledToolbarButton>
+
+              <StyledToolbarButton
+                key="reorder"
+                tooltip="Change order"
+                onTap={() => dispatch(editPageNumberSelected())}
+              >
+                <SwapVertIcon />
+              </StyledToolbarButton>
+
+              <ToolbarButton
+                key="delete"
+                tooltip="Delete page"
+                onTap={() => dispatch(deletePageSelected())}
+                sx={{
+                  backgroundColor: theme => (
+                    alpha(lighten(theme.palette.error.main, 0.2), 0.5)
+                  ),
+                  '&:hover': {
+                    backgroundColor: theme => (
+                      alpha(lighten(theme.palette.error.main, 0.4), 0.5)
+                    )
+                  }
+                }}
+              >
+                <DeleteIcon />
+              </ToolbarButton>
             </Toolbar>
           )}
         </AnimatePresence>

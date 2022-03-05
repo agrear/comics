@@ -1,14 +1,14 @@
-export interface TabProps {
+import Box, { BoxProps } from '@mui/material/Box';
+
+export interface TabProps extends BoxProps {
   label: string;
-  children: React.ReactNode;
-  className?: string;
 }
 
-function Tab({ children, className }: TabProps) {
+function Tab({ children, ...props }: TabProps) {
   return (
-    <div className={className}>
+    <Box {...props}>
       {children}
-    </div>
+    </Box>
   );
 }
 

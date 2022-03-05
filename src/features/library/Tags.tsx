@@ -1,34 +1,29 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import Chip from '@material-ui/core/Chip';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 import React from 'react';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      display: "flex",
-      flexWrap: "wrap",
-      listStyle: "none",
-      padding: 0,
-      margin: 0
-    },
-    chip: {
-      fontSize: 16,
-      marginRight: theme.spacing(1)
-    }
-  })
-);
-
 export function Tags({ children }: { children: string[] }) {
-  const classes = useStyles();
-
   return (
-    <ul className={classes.root}>
+    <Box
+      component="ul"
+      sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        listStyle: 'none',
+        p: 0,
+        m: 0
+      }}
+    >
       {React.Children.map(children, (tag, i) => (
         <li key={i}>
-          <Chip label={tag} variant="outlined" className={classes.chip} />
+          <Chip
+            label={tag}
+            variant="outlined"
+            sx={{ fontSize: 16, mr: 1 }}
+          />
         </li>
       ))}
-    </ul>
+    </Box>
   );
 }
 
