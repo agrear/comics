@@ -2,12 +2,12 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MailIcon from '@mui/icons-material/Mail';
 import AppBar from '@mui/material/AppBar';
 import Badge from '@mui/material/Badge';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MuiToolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { darken, useTheme } from '@mui/material/styles';
 import { clamp } from '@popmotion/popcorn';
 import { EntityId } from '@reduxjs/toolkit';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
@@ -94,7 +94,6 @@ interface ToolbarProps {
 }
 
 export function Toolbar({ comic, onBack }: ToolbarProps) {
-  const theme = useTheme();
   const dispatch = useDispatch();
   const newPages = useSelector(selectNewPages(comic.id));
 
@@ -145,20 +144,21 @@ export function Toolbar({ comic, onBack }: ToolbarProps) {
           <ArrowBackIcon sx={{ fontSize: 24 }} />
         </IconButton>
 
-        <motion.div
+        <Box
+          component={motion.div}
           layout
-          style={{
+          sx={{
             display: 'flex',
             flexGrow: 1,
             alignItems: 'center',
             justifyContent: 'flex-start',
-            padding: theme.spacing(0, 1),
+            px: 1,
           }}
         >
           <Typography sx={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {comic.title}
           </Typography>
-        </motion.div>
+        </Box>
 
         <AnimatePresence>
           {(newPages ?? 0) > 0 && <MarkAsRead comicId={comic.id} />}

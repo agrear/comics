@@ -1,6 +1,5 @@
 import SearchIcon from '@mui/icons-material/Search';
 import Slider from '@mui/material/Slider';
-import { darken, useTheme } from '@mui/material/styles';
 import React from 'react';
 
 import Flyout from '../flyout/Flyout';
@@ -17,8 +16,6 @@ interface ZoomProps {
 }
 
 export function Zoom({ value, onChange, onClose }: ZoomProps) {
-  const theme = useTheme();
-
   // TODO: Fix white space padding issue
   const getZoomText = (value: number) => `${value.toFixed(0)}%`.padStart(4);
 

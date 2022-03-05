@@ -1,7 +1,7 @@
 import DeleteIcon from '@mui/icons-material/Delete';
 import Box from '@mui/material/Box';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { motion, Variants } from 'framer-motion';
 import React from 'react';
 import { useLocation, useParams } from 'react-router-dom';
