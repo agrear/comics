@@ -129,11 +129,11 @@ export function createObjectUrlFromBuffer(buffer: ArrayBuffer, type: string) {
 
 export async function createBufferFromObjectUrl(
   objectUrl: string
-): Promise<{ data: Buffer, type: string }> {
+): Promise<{ data: ArrayBuffer, type: string }> {
   const response = await fetch(objectUrl);
 
   return {
-    data: Buffer.from(await response.arrayBuffer()),
+    data: await response.arrayBuffer(),
     type: response.type
   };
 }

@@ -128,7 +128,7 @@ async function parseImage(buffer) {
     type: await FileType.fromBuffer(buffer).mime,
     ...sizeOf(buffer),
     sha256: computeChecksum('sha256', buffer),
-    data: Buffer.from(buffer)
+    data: Buffer.from(buffer).buffer
   };
 }
 

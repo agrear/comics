@@ -303,7 +303,7 @@ function createPreparedStatements(db) {
         type: cover_type,
         width: cover_width,
         height: cover_height,
-        data: Buffer.from(cover_data)
+        data: Buffer.from(cover_data).buffer
       },
       bookmark,
       created: toDate(created),
@@ -328,7 +328,7 @@ function createPreparedStatements(db) {
     return {
       id,
       type: image_type,
-      data: Buffer.from(image_data),
+      data: Buffer.from(image_data).buffer,
       ...formatImageInfo(info)
     };
   }
@@ -375,16 +375,15 @@ function createPreparedStatements(db) {
     insertComic: db.transaction(({ cover, meta: { url, tags, ...meta } }) => {
       const comicId = createId();
 
-      const { width: coverWidth, height: coverHeight } = sizeOf(
-        Buffer.from(cover.data)
-      );
+      const buffer = Buffer.from(cover.data)
+      const { width: coverWidth, height: coverHeight } = sizeOf(buffer);
 
       insertComic.run({
         id: comicId,
         url: new URL(url).href,
         ...meta,
         coverType: cover.type,
-        coverData: cover.data,
+        coverData: buffer,
         coverWidth,
         coverHeight
       });
@@ -396,7 +395,8 @@ function createPreparedStatements(db) {
     insertPage: (comicId, url, imageSrc, { data, type }) => {
       const pageId = createId();
       const number = selectNextPageNumber.get(comicId);
-      const { width, height } = sizeOf(Buffer.from(data));
+      const buffer = Buffer.from(data);
+      const { width, height } = sizeOf(buffer);
 
       insertPage.run({
         id: pageId,
@@ -404,10 +404,10 @@ function createPreparedStatements(db) {
         url,
         imageSrc: imageSrc,
         imageType: type,
-        imageSha256: computeChecksum('sha256', data),
+        imageSha256: computeChecksum('sha256', buffer),
         imageWidth: width,
         imageHeight: height,
-        imageData: data,
+        imageData: buffer,
         comicId
       });
 
@@ -468,13 +468,15 @@ function createPreparedStatements(db) {
       });
     },
     updateImage: (pageId, imageSrc, { data, type }) => {
+      const buffer = Buffer.from(data);
+
       updateImage.run({
         pageId,
         src: imageSrc,
         type,
-        sha256: computeChecksum('sha256', data),
-        ...sizeOf(Buffer.from(data)),
-        data
+        sha256: computeChecksum('sha256', buffer),
+        ...sizeOf(buffer),
+        data: buffer
       });
     },
     updatePageAccessed: (pageId, accessed) => {

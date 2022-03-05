@@ -73,7 +73,7 @@ function* onImagesDownloaded(images: DbWebImage[]) {
     a.src.localeCompare(b.src)
   )).map(({ data, type, ...props }) => ({
      ...props,
-     url: createObjectUrlFromBuffer(data.buffer, type)
+     url: createObjectUrlFromBuffer(data, type)
   }))));
 }
 
@@ -193,11 +193,7 @@ function* watchImageSelected() {
   ));
 }
 
-function* onNewPageAdded(
-  comicId: EntityId,
-  url: string,
-  image: WebImage
-) {
+function* onNewPageAdded(comicId: EntityId, url: string, image: WebImage) {
   const buffer: TypedBuffer = yield call(createBufferFromObjectUrl, image.url);
 
   const page: Page = yield call(createPage, comicId, url, {

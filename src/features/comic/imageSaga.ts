@@ -10,17 +10,13 @@ import {
 } from 'utils';
 
 export function convertToCover({ type, data, ...props }: DbCover): Cover {
-  const buffer = data.buffer;
-
-  return { ...props, url: createObjectUrlFromBuffer(buffer, type) };
+  return { ...props, url: createObjectUrlFromBuffer(data, type) };
 }
 
 export function convertToImage({ type, data, ...props }: DbImage): Image {
-  const buffer = data.buffer;
-
   return {
     ...props,
-    url: createObjectUrlFromBuffer(buffer, type)
+    url: createObjectUrlFromBuffer(data, type)
   };
 }
 

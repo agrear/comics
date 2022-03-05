@@ -13,7 +13,7 @@ declare global {
   };
 
   type TypedBuffer = {
-    data: Buffer,
+    data: ArrayBuffer,
     type: string
   };
 
