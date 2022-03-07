@@ -1,5 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
+import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import Link from '@mui/material/Link';
@@ -89,8 +90,6 @@ function DetailPage({
       sx={{ px: 2 }}
     >
       <StyledTab label="General">
-        <Typography variant="h2">{title}</Typography>
-        <Typography variant="h5" sx={{ mt: -2 }}>{author}</Typography>
         <Typography variant="h6">
           <Link href={url} rel="noreferrer" target="_blank">{url}</Link>
         </Typography>
@@ -237,18 +236,27 @@ function Library() {
       )}
       MasterToolbar={({ items }) => (
         <>
-          <Typography
-            variant="h6"
+          <Box
             sx={{
+              display: 'flex',
               flex: '1 1 auto',
-              m: 1,
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis'
+              alignItems: 'center',
+              px: 1
             }}
           >
-            {showNumItems(items.length, 'comic')}
-          </Typography>
+            <Typography
+              variant="h6"
+              alignItems="center"
+              sx={{
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}
+            >
+              {showNumItems(items.length, 'comic')}
+            </Typography>
+          </Box>
+
           <EditComicDialog
             title="Add Comic"
             buttonIcon={<AddIcon />}
