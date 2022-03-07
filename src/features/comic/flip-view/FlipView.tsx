@@ -227,6 +227,7 @@ export function FlipView({
                   dragControls={dragControls}
                   direction={direction}
                   parentSize={{ width: client.width, height: client.height }}
+                  disabled={disabled}
                   objectFit={layout.fit}
                   objectPosition={layout.position}
                   brightness={brightness}

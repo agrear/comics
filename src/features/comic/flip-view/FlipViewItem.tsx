@@ -40,6 +40,7 @@ interface FlipViewItemProps {
   dragControls: DragControls;
   parentSize: Size;
   direction: number;
+  disabled: boolean;
   objectFit: ObjectFit;
   objectPosition: ObjectPosition;
   brightness: number;
@@ -52,6 +53,7 @@ function FlipViewItem({
   dragControls,
   parentSize,
   direction,
+  disabled,
   objectFit,
   objectPosition,
   brightness,
@@ -132,6 +134,75 @@ function FlipViewItem({
     }
   }, [dragConstraints, x, y]);
 
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (parentSize === null || dragConstraints === undefined) {
+        return;
+      }
+
+      const { left, right, top, bottom } = dragConstraints;
+
+      switch (event.key) {
+        case 'ArrowLeft': {
+          event.stopPropagation();
+          const delta = parentSize.width * panDistanceFactor;
+          animate(x, clamp(left, right, x.get() + delta), spring);
+          break;
+        }
+        case 'ArrowRight': {
+          event.stopPropagation();
+          const delta = parentSize.width * panDistanceFactor;
+          animate(x, clamp(left, right, x.get() - delta), spring);
+          break;
+        }
+        case 'ArrowDown': {
+          event.stopPropagation();
+          const delta = parentSize.height * panDistanceFactor;
+          animate(y, clamp(top, bottom, y.get() - delta), spring);
+          break;
+        }
+        case 'ArrowUp': {
+          event.stopPropagation();
+          const delta = parentSize.height * panDistanceFactor;
+          animate(y, clamp(top, bottom, y.get() + delta), spring);
+          break;
+        }
+        default:
+          break;
+      }
+    };
+
+    const handleWheel = (event: WheelEvent) => {
+      if (!event.ctrlKey) {
+        const { left, right, top, bottom } = dragConstraints;
+        const offscreen = { width: right - left, height: bottom - top };
+
+        // Scroll axis with larger offscreen portion
+        if (offscreen.width > offscreen.height) {  // Scroll horizontally
+          const delta = Math.sign(event.deltaY) * parentSize.width * 0.2;
+          animate(x, clamp(left, right, x.get() - delta), spring);
+        } else {  // Scroll vertically
+          const delta = Math.sign(event.deltaY) * parentSize.height * 0.2;
+          animate(y, clamp(top, bottom, y.get() - delta), spring);
+        }
+      }
+    };
+
+    const cleanup = () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('wheel', handleWheel);
+    };
+
+    if (!disabled) {
+      window.addEventListener('keydown', handleKeyDown);
+      window.addEventListener('wheel', handleWheel);
+    } else {
+      cleanup();
+    }
+
+    return cleanup;
+  }, [disabled, dragConstraints, parentSize, x, y]);
+
   return (
     <motion.div
       drag
@@ -149,58 +220,6 @@ function FlipViewItem({
           onFlip(-1);
         }
       }}
-      onKeyDown={event => {
-        if (parentSize === null || dragConstraints === undefined) {
-          return;
-        }
-
-        const { left, right, top, bottom } = dragConstraints;
-
-        switch (event.key) {
-          case 'ArrowLeft': {
-            event.stopPropagation();
-            const delta = parentSize.width * panDistanceFactor;
-            animate(x, clamp(left, right, x.get() + delta), spring);
-            break;
-          }
-          case 'ArrowRight': {
-            event.stopPropagation();
-            const delta = parentSize.width * panDistanceFactor;
-            animate(x, clamp(left, right, x.get() - delta), spring);
-            break;
-          }
-          case 'ArrowDown': {
-            event.stopPropagation();
-            const delta = parentSize.height * panDistanceFactor;
-            animate(y, clamp(top, bottom, y.get() - delta), spring);
-            break;
-          }
-          case 'ArrowUp': {
-            event.stopPropagation();
-            const delta = parentSize.height * panDistanceFactor;
-            animate(y, clamp(top, bottom, y.get() + delta), spring);
-            break;
-          }
-          default:
-            break;
-        }
-      }}
-      onWheel={event => {  // Mouse wheel scroll
-        if (!event.ctrlKey) {
-          const { left, right, top, bottom } = dragConstraints;
-          const offscreen = { width: right - left, height: bottom - top };
-
-          // Scroll axis with larger offscreen portion
-          if (offscreen.width > offscreen.height) {  // Scroll horizontally
-            const delta = Math.sign(event.deltaY) * parentSize.width * 0.2;
-            animate(x, clamp(left, right, x.get() - delta), spring);
-          } else {  // Scroll vertically
-            const delta = Math.sign(event.deltaY) * parentSize.height * 0.2;
-            animate(y, clamp(top, bottom, y.get() - delta), spring);
-          }
-        }
-      }}
-      tabIndex={0}
       style={{ x, y }}
     >
       {image !== undefined && (
