@@ -1,6 +1,12 @@
 import { clamp } from '@popmotion/popcorn';
 import { EntityId } from '@reduxjs/toolkit';
-import { animate, motion, Spring, useMotionValue, Variants } from "framer-motion";
+import {
+  animate,
+  DragControls,
+  motion,
+  Spring,
+  useMotionValue
+} from 'framer-motion';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
@@ -15,102 +21,61 @@ import {
   Size
 } from 'utils';
 
-const variants: Variants = {
-  initial: (direction: number) => ({
-    opacity: direction === 0 ? 1 : 0,
-    rotateY: direction === 0 ? -90 : 0,
-    scale: direction === 0 ? 0.5 : 1,
-    x: direction === 0 ? 0 : (direction > 0 ? 2000 : -2000)
-  }),
-  enter: (direction: number) => ({
-    opacity: 1,
-    rotateY: 0,
-    scale: 1,
-    x: 0,
-    transition: {
-      rotateY: {
-        type: 'tween',
-        ease: 'easeOut',
-        duration: 0.5
-      },
-      x: {
-        type: "tween",
-        ease: "easeOut",
-        duration: direction === 0 ? 0.5 : 0.3
-      }
-    }
-  }),
-  exit: (direction: number) => ({
-    opacity: 0,
-    rotateY: direction === 0 ? -90 : 0,
-    scale: direction === 0 ? 0.5 : 1,
-    x: direction === 0 ? 0 : (direction < 0 ? 2000 : -2000),
-    transition: {
-      opacity: {
-        duration: direction === 0 ? 0.4 : 0.15
-      },
-      rotateY: {
-        type: 'tween',
-        ease: 'easeIn',
-        duration: 0.4
-      },
-      scale: {
-        type: 'tween',
-        ease: 'easeIn',
-        duration: 0.4
-      },
-      x: {
-        type: "tween",
-        ease: "easeIn",
-        duration: 0.15
-      }
-    }
-  })
-};
-
 const spring: Spring = {
-  type: "spring",
+  type: 'spring',
   damping: 50,
   stiffness: 300,
   mass: 1.25
 };
 
-const dragThreshold = 280;
+// Controls the amount of speed necessary when dragging to
+// flip to the next/previous page
+const flipThreshold = 1800;
+
+// Distance factor for panning with scroll wheel and arrow keys
+const panDistanceFactor = 0.25;
 
 interface FlipViewItemProps {
   pageId?: EntityId;
+  dragControls: DragControls;
   parentSize: Size;
   direction: number;
   objectFit: ObjectFit;
   objectPosition: ObjectPosition;
   brightness: number;
   zoom: number;
-  onPageFlip: (direction: 1 | -1) => void;
+  onFlip: (direction: 1 | -1) => void;
 }
 
 function FlipViewItem({
   pageId,
+  dragControls,
   parentSize,
   direction,
   objectFit,
   objectPosition,
   brightness,
   zoom,
-  onPageFlip
+  onFlip
 }: FlipViewItemProps) {
   const image = useSelector(selectImage(pageId));
-  const [entered, setEntered] = React.useState(false);
 
   const x = useMotionValue<number>(0);
   const y = useMotionValue<number>(0);
 
-  const size = (() => {
-    const size = { width: image?.width || 0, height: image?.height || 0 };
+  const size = React.useMemo(() => {
+    if (image === undefined) {
+      return { width: 0, height: 0 };
+    }
+
+    const size = { width: image.width, height: image.height };
     const { width, height } = fitObjectSize(objectFit, parentSize, size);
     return { width: width * zoom, height: height * zoom };
-  })();
+  }, [image, objectFit, parentSize, zoom]);
 
-  const position = fitObjectPosition(objectPosition, parentSize, size);
+  const position = React.useMemo(() => (
+    fitObjectPosition(objectPosition, parentSize, size)
+  ), [objectPosition, parentSize, size]);
 
   const dragConstraints = React.useMemo(() => {
     const [horizontal, vertical] = getAlignment(objectPosition);
@@ -152,46 +117,76 @@ function FlipViewItem({
   }, [x, y]);
 
   React.useEffect(() => {
-    if (entered) {  // Animate position to fit inside new constraints
-      const { left, right, top, bottom } = dragConstraints;
+    const { left, right, top, bottom } = dragConstraints;
 
-      if (x.get() < left) {
-        animate(x, left, spring);
-      } else if (x.get() > right) {
-        animate(x, right, spring);
-      }
-
-      if (y.get() < top) {
-        animate(y, top, spring);
-      } else if (y.get() > bottom) {
-        animate(y, bottom, spring);
-      }
+    if (x.get() < left) {
+      animate(x, left, spring);
+    } else if (x.get() > right) {
+      animate(x, right, spring);
     }
-  }, [dragConstraints, entered, x, y]);
+
+    if (y.get() < top) {
+      animate(y, top, spring);
+    } else if (y.get() > bottom) {
+      animate(y, bottom, spring);
+    }
+  }, [dragConstraints, x, y]);
 
   return (
-    <motion.li
-      custom={direction}
-      variants={variants}
-      initial="initial"
-      animate="enter"
-      exit="exit"
-      onAnimationComplete={() => setEntered(true)}
-      drag={true}
+    <motion.div
+      drag
+      dragControls={dragControls}
+      dragListener={false}
       dragConstraints={dragConstraints}
       dragTransition={{
         power: 0.2,
         timeConstant: 120
       }}
-      onDragEnd={(e, { offset }) => {
-        if (dragConstraints.right + offset.x <= -dragThreshold) {
-          onPageFlip(1);
-        } else if (dragConstraints.left + offset.x >= dragThreshold) {
-          onPageFlip(-1);
+      onDragEnd={(_event, { velocity }) => {
+        if (velocity.x <= -flipThreshold) {
+          onFlip(1);
+        } else if (velocity.x >= flipThreshold) {
+          onFlip(-1);
+        }
+      }}
+      onKeyDown={event => {
+        if (parentSize === null || dragConstraints === undefined) {
+          return;
+        }
+
+        const { left, right, top, bottom } = dragConstraints;
+
+        switch (event.key) {
+          case 'ArrowLeft': {
+            event.stopPropagation();
+            const delta = parentSize.width * panDistanceFactor;
+            animate(x, clamp(left, right, x.get() + delta), spring);
+            break;
+          }
+          case 'ArrowRight': {
+            event.stopPropagation();
+            const delta = parentSize.width * panDistanceFactor;
+            animate(x, clamp(left, right, x.get() - delta), spring);
+            break;
+          }
+          case 'ArrowDown': {
+            event.stopPropagation();
+            const delta = parentSize.height * panDistanceFactor;
+            animate(y, clamp(top, bottom, y.get() - delta), spring);
+            break;
+          }
+          case 'ArrowUp': {
+            event.stopPropagation();
+            const delta = parentSize.height * panDistanceFactor;
+            animate(y, clamp(top, bottom, y.get() + delta), spring);
+            break;
+          }
+          default:
+            break;
         }
       }}
       onWheel={event => {  // Mouse wheel scroll
-        if (!event.getModifierState('Control')) {
+        if (!event.ctrlKey) {
           const { left, right, top, bottom } = dragConstraints;
           const offscreen = { width: right - left, height: bottom - top };
 
@@ -205,26 +200,19 @@ function FlipViewItem({
           }
         }
       }}
-      style={{
-        x,
-        y,
-        position: "absolute",
-        width: "100%",
-        height: "100%"
-      }}
+      tabIndex={0}
+      style={{ x, y }}
     >
-      <FlipViewImage
-        src={image?.url}
-        position={position}
-        size={size}
-        objectFit={objectFit}
-        objectPosition={objectPosition}
-        brightness={brightness}
-        zoom={zoom}
-        animateLayout={entered}
-        onDoubleClick={resetDrag}
-      />
-    </motion.li>
+      {image !== undefined && (
+        <FlipViewImage
+          src={image.url}
+          position={position}
+          size={size}
+          brightness={brightness}
+          onDoubleClick={resetDrag}
+        />
+      )}
+    </motion.div>
   );
 }
 

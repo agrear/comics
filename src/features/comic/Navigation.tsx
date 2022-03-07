@@ -1,5 +1,4 @@
 import BackspaceIcon from '@mui/icons-material/Backspace';
-import NavigationIcon from '@mui/icons-material/Navigation';
 import TelegramIcon from '@mui/icons-material/Telegram';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -35,24 +34,30 @@ function Digit({ disabled, children, onClick }: DigitProps) {
 }
 
 interface NavigationProps {
-  bookmark: number;
+  open: boolean;
+  anchorEl?: HTMLElement | null;
   numPages: number;
+  onClose: () => void;
   onPageChange: (index: number) => void;
 }
 
-export function Navigation({ bookmark, numPages, onPageChange }: NavigationProps) {
+export function Navigation({
+  open,
+  anchorEl,
+  numPages,
+  onClose,
+  onPageChange
+}: NavigationProps) {
   const [page, setPage] = React.useState('');
 
   const isValid = (digit: number) => Number(page + digit) <= numPages;
 
   return (
     <Flyout
-      buttonProps={{
-        children: `${bookmark + 1} / ${numPages}`,
-        startIcon: <NavigationIcon />,
-        disabled: numPages <= 1
-      }}
+      open={open}
+      anchorEl={anchorEl}
       paperProps={{ sx: { p: 2 } }}
+      onClose={onClose}
     >
       <Box
         sx={{
@@ -111,7 +116,7 @@ export function Navigation({ bookmark, numPages, onPageChange }: NavigationProps
         >
           <BackspaceIcon sx={{ fontSize: 24 }} />
         </Button>
-        
+
         <Digit
           key={0}
           disabled={page.length === 0 || !isValid(0)}
@@ -119,7 +124,7 @@ export function Navigation({ bookmark, numPages, onPageChange }: NavigationProps
         >
           {0}
         </Digit>
-        
+
         <Button
           variant="outlined"
           disabled={page.length === 0}

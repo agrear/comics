@@ -1,5 +1,10 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ExploreIcon from '@mui/icons-material/Explore';
 import MailIcon from '@mui/icons-material/Mail';
+import NavigationIcon from '@mui/icons-material/Navigation';
+import SearchIcon from '@mui/icons-material/Search';
+import SettingsOverscanIcon from '@mui/icons-material/SettingsOverscan';
+import WbIncandescentIcon from '@mui/icons-material/WbIncandescent';
 import AppBar from '@mui/material/AppBar';
 import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
@@ -8,27 +13,10 @@ import IconButton from '@mui/material/IconButton';
 import MuiToolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { clamp } from '@popmotion/popcorn';
-import { EntityId } from '@reduxjs/toolkit';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
-import Brightness from './Brightness';
-import Navigation from './Navigation';
-import Zoom from './Zoom';
-import LayoutDialog from './layout/LayoutDialog';
-import {
-  bookmarkUpdated,
-  Comic,
-  comicBrightnessUpdated,
-  comicMarkedAsRead,
-  comicLayoutUpdated,
-  selectNewPages
-} from '../comic/comicSlice';
-import ExplorerDialog from '../explorer/ExplorerDialog';
-
-const toolbarVariants: Variants = {
+const variants: Variants = {
   initial: {
     y: '-100%'
   },
@@ -51,11 +39,10 @@ const toolbarVariants: Variants = {
 };
 
 interface MarkAsReadProps {
-  comicId: EntityId;
+  onTap: () => void;
 }
 
-function MarkAsRead({ comicId }: MarkAsReadProps) {
-  const dispatch = useDispatch();
+function MarkAsRead({ onTap }: MarkAsReadProps) {
   const [showTooltip, toggleTooltip] = React.useState<boolean>(false);
 
   return (
@@ -66,7 +53,7 @@ function MarkAsRead({ comicId }: MarkAsReadProps) {
         initial={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         disableElevation
-        onTap={() => dispatch(comicMarkedAsRead({ comicId }))}
+        onTap={onTap}
         onPointerEnter={() => toggleTooltip(true)}
         onPointerLeave={() => toggleTooltip(false)}
       >
@@ -89,42 +76,43 @@ function MarkAsRead({ comicId }: MarkAsReadProps) {
 }
 
 interface ToolbarProps {
-  comic: Comic;
-  onBack: () => void;
+  title: string;
+  bookmark: number;
+  numPages: number;
+  brightness: string;
+  zoom: string;
+  newPages: number;
+  onBackClick: () => void;
+  onBrightnessClick: (event: React.SyntheticEvent) => void;
+  onMarkAsReadClick: () => void;
+  onNavigationClick: (event: React.SyntheticEvent) => void;
+  onZoomClick: (event: React.SyntheticEvent) => void;
+  onLayoutClick: () => void;
+  onExplorerClick: () => void;
 }
 
-export function Toolbar({ comic, onBack }: ToolbarProps) {
-  const dispatch = useDispatch();
-  const newPages = useSelector(selectNewPages(comic.id));
-
-  const handleBrightnessChange = (value: number) => {
-    dispatch(comicBrightnessUpdated({
-      comicId: comic.id,
-      brightness: clamp(0.25, 1.25, value / 100)
-    }));
-  };
-
-  const handlePageChange = (index: number) => {
-    dispatch(bookmarkUpdated({ page: comic.pages[index] }));
-  };
-
-  const handleZoomChange = (value: number) => {
-    dispatch(comicLayoutUpdated({
-      comicId: comic.id,
-      layout: {
-        ...comic.layout,
-        zoom: clamp(0.5, 2.0, value / 100)
-      }
-    }));
-  };
-
+export function Toolbar({
+  title,
+  bookmark,
+  numPages,
+  brightness,
+  zoom,
+  newPages,
+  onBackClick,
+  onBrightnessClick,
+  onMarkAsReadClick,
+  onNavigationClick,
+  onZoomClick,
+  onLayoutClick,
+  onExplorerClick
+}: ToolbarProps) {
   return (
     <AppBar
       component={motion.div}
       initial="initial"
       animate="enter"
       exit="exit"
-      variants={toolbarVariants}
+      variants={variants}
       sx={{
         height: 40
       }}
@@ -140,7 +128,7 @@ export function Toolbar({ comic, onBack }: ToolbarProps) {
           userSelect: 'none'
         }}
       >
-        <IconButton onClick={() => onBack()}>
+        <IconButton onClick={onBackClick}>
           <ArrowBackIcon sx={{ fontSize: 24 }} />
         </IconButton>
 
@@ -156,30 +144,53 @@ export function Toolbar({ comic, onBack }: ToolbarProps) {
           }}
         >
           <Typography sx={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {comic.title}
+            {title}
           </Typography>
         </Box>
 
         <AnimatePresence>
-          {(newPages ?? 0) > 0 && <MarkAsRead comicId={comic.id} />}
+          {(newPages ?? 0) > 0 && (
+            <MarkAsRead onTap={onMarkAsReadClick} />
+          )}
         </AnimatePresence>
 
-        <Navigation
-          bookmark={comic.bookmark}
-          numPages={comic.pages.length}
-          onPageChange={handlePageChange}
-        />
+        <Button
+          startIcon={<NavigationIcon />}
+          disabled={numPages <= 1}
+          onClick={onNavigationClick}
+        >
+          {bookmark + 1} / {numPages}
+        </Button>
 
-        <Zoom value={comic.layout.zoom * 100} onChange={handleZoomChange} />
+        <Button
+          startIcon={<SearchIcon />}
+          onClick={onZoomClick}
+          sx={{ minWidth: theme => theme.spacing(11) }}
+        >
+          {zoom}
+        </Button>
 
-        <Brightness
-          value={comic.brightness * 100}
-          onChange={handleBrightnessChange}
-        />
+        <Button
+          startIcon={<WbIncandescentIcon />}
+          onClick={onBrightnessClick}
+          sx={{ minWidth: theme => theme.spacing(11) }}
+        >
+          {brightness}
+        </Button>
 
-        <LayoutDialog comic={comic} />
+        <Button
+          startIcon={<SettingsOverscanIcon />}
+          onClick={onLayoutClick}
+        >
+          Layout
+        </Button>
 
-        <ExplorerDialog comic={comic} />
+        <Button
+          startIcon={<ExploreIcon />}
+          onClick={onExplorerClick}
+        >
+          Explorer
+        </Button>
       </MuiToolbar>
     </AppBar>
   );

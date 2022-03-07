@@ -1,4 +1,3 @@
-import SearchIcon from '@mui/icons-material/Search';
 import Slider from '@mui/material/Slider';
 import React from 'react';
 
@@ -10,31 +9,28 @@ const marks = [50, 75, 100, 125, 150, 175, 200].map(value => ({
 }));
 
 interface ZoomProps {
+  open: boolean;
+  anchorEl?: HTMLElement | null;
   onChange: (zoom: number) => void;
   onClose?: () => void;
   value: number;
+  displayValue: (value: number) => string;
 }
 
-export function Zoom({ value, onChange, onClose }: ZoomProps) {
-  // TODO: Fix white space padding issue
-  const getZoomText = (value: number) => `${value.toFixed(0)}%`.padStart(4);
-
+export function Zoom({
+  open,
+  anchorEl,
+  value,
+  displayValue,
+  onChange,
+  onClose
+}: ZoomProps) {
   return (
     <Flyout
-      buttonProps={{
-        startIcon: <SearchIcon />,
-        children: getZoomText(value),
-        sx: { minWidth: theme => theme.spacing(11) }
-      }}
+      open={open}
+      anchorEl={anchorEl}
+      paperProps={{ sx: { height: 240, width: 80, px: 2, py: 3 } }}
       onClose={onClose}
-      paperProps={{
-        sx: {
-          height: 240,
-          width: 80,
-          px: 2,
-          py: 3
-        }
-      }}
     >
       <Slider
         orientation="vertical"
@@ -45,7 +41,7 @@ export function Zoom({ value, onChange, onClose }: ZoomProps) {
         min={50}
         max={200}
         onChange={(e, v) => onChange(v as number)}
-        getAriaValueText={getZoomText}
+        getAriaValueText={displayValue}
         valueLabelDisplay="auto"
       />
     </Flyout>

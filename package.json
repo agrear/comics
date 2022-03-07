@@ -30,7 +30,7 @@
     "electron-store": "^8.0.1",
     "file-type": "^16.5.3",
     "formik": "^2.2.6",
-    "framer-motion": "^4.1.2",
+    "framer-motion": "^6.2.8",
     "fuse.js": "^6.5.3",
     "got": "^11.8.3",
     "http-status-codes": "^2.2.0",

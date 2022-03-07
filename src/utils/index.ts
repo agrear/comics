@@ -138,6 +138,10 @@ export async function createBufferFromObjectUrl(
   };
 }
 
+export function formatPercentage(x: number) {
+  return `${(x * 100).toFixed(0)}%`.padStart(4);
+};
+
 export function freeObjectUrl(objectUrl: string) {
   const urlCreator = window.URL || window.webkitURL;
   urlCreator.revokeObjectURL(objectUrl);

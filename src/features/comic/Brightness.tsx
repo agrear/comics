@@ -1,4 +1,3 @@
-import WbIncandescentIcon from '@mui/icons-material/WbIncandescent';
 import Slider from '@mui/material/Slider';
 import React from 'react';
 
@@ -10,31 +9,28 @@ const marks = [25, 50, 75, 100, 125].map(value => ({
 }));
 
 interface BrightnessProps {
+  open: boolean;
+  anchorEl?: HTMLElement | null;
   onChange: (brightness: number) => void;
   onClose?: () => void;
   value: number;
+  displayValue: (value: number) => string;
 }
 
-export function Brightness({ value, onChange, onClose }: BrightnessProps) {
-  // TODO: Fix white space padding issue
-  const getText = (value: number) => `${value.toFixed(0)}%`.padStart(4);
-
+export function Brightness({
+  open,
+  anchorEl,
+  value,
+  displayValue,
+  onChange,
+  onClose
+}: BrightnessProps) {
   return (
     <Flyout
-      buttonProps={{
-        startIcon: <WbIncandescentIcon />,
-        children: getText(value),
-        sx: { minWidth: 88 }
-      }}
+      open={open}
+      anchorEl={anchorEl}
+      paperProps={{ sx: { height: 240, width: 80, px: 2, py: 3 } }}
       onClose={onClose}
-      paperProps={{
-        sx: {
-          height: 240,
-          width: 80,
-          px: 2,
-          py: 3
-        }
-      }}
     >
       <Slider
         orientation="vertical"
@@ -45,7 +41,7 @@ export function Brightness({ value, onChange, onClose }: BrightnessProps) {
         min={25}
         max={125}
         onChange={(e, v) => onChange(v as number)}
-        getAriaValueText={getText}
+        getAriaValueText={displayValue}
         valueLabelDisplay="auto"
       />
     </Flyout>
