@@ -116,7 +116,6 @@ function DetailPage({
                 }));
               }}
               name="updatesEnabled"
-              color="primary"
             />
           }
           label="Updates enabled"
@@ -140,7 +139,6 @@ function DetailPage({
                   }));
                 }}
                 name="updatesEnabled"
-                color="primary"
               />
             }
             label="New page limit"

@@ -91,10 +91,10 @@ export function DeleteComic({ comicId }: DeleteComicProps) {
                   <Typography variant="body2" paragraph>
                     This comic and all its pages will be permanently deleted.
                   </Typography>
-                  
+
                   <Button
-                    color="primary"
                     variant="contained"
+                    color="warning"
                     onClick={event => handleDelete(event.target)}
                     sx={{ alignSelf: 'flex-end' }}
                   >

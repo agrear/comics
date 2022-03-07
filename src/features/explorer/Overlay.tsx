@@ -157,7 +157,7 @@ export function Overlay({ comic }: OverlayProps) {
             component={motion.button}
             layout
             variant="contained"
-            color="primary"
+            color="secondary"
             fullWidth
             startIcon={
               request?.mode === UpdateMode.MultiplePages && running ? (
@@ -190,6 +190,7 @@ export function Overlay({ comic }: OverlayProps) {
           component={motion.button}
           layout
           variant="contained"
+          color="secondary"
           fullWidth
           startIcon={
             request?.mode === UpdateMode.SinglePage && running ? (

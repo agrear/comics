@@ -93,7 +93,7 @@ export function SelectPageNumberDialog({
         </Button>
         <Button
           variant="contained"
-          color="primary"
+          color="secondary"
           disabled={selectedPage?.number === pageNumber}
           onClick={() => {
             if (selectedPage !== null && selectedPage !== undefined) {

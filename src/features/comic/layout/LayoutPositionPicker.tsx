@@ -1,5 +1,6 @@
 import ImageIcon from '@mui/icons-material/ImageSharp';
 import Box from '@mui/material/Box';
+import { useTheme } from '@mui/material/styles';
 import { motion, MotionStyle } from 'framer-motion';
 import React from 'react';
 
@@ -36,6 +37,8 @@ function LayoutPositionPicker({
   position,
   onChange
 }: LayoutPositionPickerProps) {
+  const theme = useTheme();
+
   const container = { width: 180, height: 140 };
   const image = { width: 80, height: 100 };
   const size = fitObjectSize(fit, container, image);
@@ -69,13 +72,15 @@ function LayoutPositionPicker({
       >
         <ImageIcon />
       </Box>
-      
+
       {positionPoints.map(({ position: pos, style }) => (
         <motion.div
           key={pos}
           style={{
             ...style,
-            backgroundColor: pos === position ? 'red' : 'white',
+            backgroundColor: pos === position ? (
+              theme.palette.secondary.main
+            ) : 'white',
             position: 'absolute',
             width: 16,
             height: 16,

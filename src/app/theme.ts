@@ -35,6 +35,11 @@ export const createTheme = () => responsiveFontSizes(createMuiTheme({
         }
       }
     },
+    MuiBadge: {
+      defaultProps: {
+        color: 'secondary'
+      }
+    },
     MuiButton: {
       defaultProps: {
         size: 'large'
@@ -67,6 +72,21 @@ export const createTheme = () => responsiveFontSizes(createMuiTheme({
           backgroundColor: lighten(theme.palette.grey[900], 0.1),
           backgroundImage: 'none'
         }
+      }
+    },
+    MuiRadio: {
+      defaultProps: {
+        color: 'secondary'
+      }
+    },
+    MuiSlider: {
+      defaultProps: {
+        color: 'secondary'
+      }
+    },
+    MuiSwitch: {
+      defaultProps: {
+        color: 'secondary'
       }
     },
     MuiSvgIcon: {
@@ -117,6 +137,9 @@ export const createTheme = () => responsiveFontSizes(createMuiTheme({
   palette: {
     mode: 'dark',
     primary: {
+      main: '#fff'
+    },
+    secondary: {
       main: lightBlue['500']
     },
     background: {

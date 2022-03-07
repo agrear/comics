@@ -118,7 +118,6 @@ function Settings() {
               onChange={(event, checked) => dispatch(
                 minimizeToTrayUpdated(checked)
               )}
-              color="primary"
             />
 
             <Label>Open at login</Label>
@@ -127,7 +126,6 @@ function Settings() {
               onChange={(event, checked) => dispatch(
                 openAtLoginUpdated(checked)
               )}
-              color="primary"
             />
           </SettingsGrid>
         </StyledTab>

@@ -152,7 +152,6 @@ export function Cover({
       <Badge
         component={motion.span}
         badgeContent={badgeContent}
-        color="primary"
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         sx={{
           '& .MuiBadge-anchorOriginBottomRightRectangular': {

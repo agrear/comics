@@ -59,7 +59,6 @@ function MarkAsRead({ onTap }: MarkAsReadProps) {
       >
         <Badge
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-          color="primary"
           variant="dot"
           sx={{
             '& .MuiBadge-anchorOriginBottomRightRectangular': {

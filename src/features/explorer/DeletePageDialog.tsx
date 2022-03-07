@@ -43,9 +43,10 @@ export function DeletePageDialog() {
         <Button onClick={handleClose}>
           Cancel
         </Button>
+
         <Button
           variant="contained"
-          color="primary"
+          color="warning"
           disabled={selectedPage === null || selectedPage === undefined}
           onClick={() => {
             if (selectedPage !== null && selectedPage !== undefined) {
