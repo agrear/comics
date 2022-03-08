@@ -101,7 +101,7 @@ export function Wizard<T extends object>({
             ))}
           </Stepper>
 
-          <Box 
+          <Box
             sx={{
               display: 'flex',
               flexDirection: 'column',
@@ -126,7 +126,14 @@ export function Wizard<T extends object>({
             </AnimatePresence>
           </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', m: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: 2,
+              m: 2
+            }}
+          >
             <Button
               disabled={page === 0}
               onClick={goToPreviousPage}
@@ -134,11 +141,11 @@ export function Wizard<T extends object>({
             >
               Back
             </Button>
-        
+
             <Button
               disabled={isSubmitting}
               variant="contained"
-              color="primary"
+              color="secondary"
               type="submit"
               sx={{ width: 80, mr: 1 }}
             >
