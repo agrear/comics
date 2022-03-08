@@ -1,5 +1,5 @@
 import { clamp } from '@popmotion/popcorn';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import React from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
@@ -208,19 +208,17 @@ export function Comic() {
         onClose={closeExplorer}
       />
 
-      <AnimatePresence>
-        <FlipView
-          pages={comic.pages}
-          selectedIndex={comic.bookmark}
-          disabled={state !== UIState.Idle}
-          brightness={comic.brightness}
-          layout={comic.layout}
-          exit={goBack}
-          onExitComplete={() => history.push(`/#back`)}
-          onSelectedIndexChange={updateBookmark}
-          onZoomChange={updateZoom}
-        />
-      </AnimatePresence>
+      <FlipView
+        pages={comic.pages}
+        selectedIndex={comic.bookmark}
+        disabled={state !== UIState.Idle}
+        brightness={comic.brightness}
+        layout={comic.layout}
+        exit={goBack}
+        onExitComplete={() => history.push(`/#back`)}
+        onSelectedIndexChange={updateBookmark}
+        onZoomChange={updateZoom}
+      />
     </motion.div>
   );
 }
