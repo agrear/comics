@@ -442,10 +442,12 @@ function createPreparedStatements(db) {
       deleteTags(comicId, [...oldTags].filter(x => !newTags.has(x)));
       insertTags(comicId, [...newTags].filter(x => !oldTags.has(x)));
 
+      const buffer = Buffer.from(cover.data);
       updateComicCover.run({
         comicId,
-        ...sizeOf(Buffer.from(cover.data)),
-        ...cover
+        type: cover.type,
+        ...sizeOf(buffer),
+        data: buffer
       });
     }),
     updateComicAccessed: (comicId, accessed) => {
