@@ -78,10 +78,10 @@ function parse(html, baseUrl) {
         }
 
         // Normalize URL
-        const url = new URL(link.href, baseUrl);
-        link.href = normalizeUrl(new URL(url.pathname, baseUrl).href, {
+        link.href = normalizeUrl(new URL(link.href, baseUrl).href, {
           stripHash: true
         });
+
         links.push(link);
 
         break;
