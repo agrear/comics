@@ -192,7 +192,7 @@ export function levenshtein(a: string, b: string): number {
       matrix[i][j] = Math.min(
         matrix[i][j - 1] + 1,  // Deletion
         matrix[i - 1][j] + 1,  // Insertion
-        matrix[i - 1][j - 1] + indicator,  // Substitution
+        matrix[i - 1][j - 1] + indicator  // Substitution
       );
     }
   }
