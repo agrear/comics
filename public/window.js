@@ -31,9 +31,18 @@ function createWindow(options) {
     });
   }
 
-  window.webContents.on('new-window', function (e, url) {
-    e.preventDefault();
-    shell.openExternal(url);
+  window.webContents.setWindowOpenHandler(({ url }) => {
+    const isSafeForExternalOpen = url => (
+      ['http:', 'https:'].includes(new URL(url).protocol)
+    );
+
+    if (isSafeForExternalOpen(url)) {
+      setImmediate(() => {
+        shell.openExternal(url);
+      });
+    }
+
+    return { action: 'deny' };
   });
 
   // https://github.com/electron/electron/issues/24910
