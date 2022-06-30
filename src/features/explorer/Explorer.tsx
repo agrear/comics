@@ -3,6 +3,7 @@ import { clamp, snap } from '@popmotion/popcorn';
 import {
   animate,
   AnimatePresence,
+  AnimationOptions,
   motion,
   useDragControls,
   useMotionValue
@@ -59,6 +60,7 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
 
   const thumbHeight = parseInt(theme.spacing(6));
   const scrollbarHeight = (scrollbar?.current?.clientHeight ?? 0) - thumbHeight;
+  const scrollableHeight = scrollbarHeight - thumbHeight;
   const scrollY = useMotionValue<number>(0);
 
   const snapTo = snap(itemDistance);
@@ -69,13 +71,18 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
   ) => {
       const yStart = y.get();
       const yEnd = index * -itemDistance;
-      animate(y, yEnd, {
+      const transition: AnimationOptions<number> = {
         type: 'tween',
         ease: 'easeInOut',
-        duration: clamp(0, 1, Math.abs(yEnd - yStart) / itemDistance) * 0.5,
-        onComplete
-      });
-  }, [itemDistance, y]);
+        duration: clamp(0, 1, Math.abs(yEnd - yStart) / itemDistance) * 0.5
+      };
+
+      animate(y, yEnd, { ...transition, onComplete });
+
+      // Update scrollbar
+      const scrollYEnd = (yEnd / -dragDistance) * scrollableHeight;
+      animate(scrollY, scrollYEnd, transition);
+  }, [dragDistance, itemDistance, scrollableHeight, scrollY, y]);
 
   const overscan = 1;
   const windowSize = Math.ceil(parentHeight / itemDistance) + overscan * 2;
@@ -152,8 +159,8 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
 
   // Update scrollbar position
   React.useEffect(() => {
-    scrollY.set((y.get() / -dragDistance) * scrollbarHeight);
-  }, [dragDistance, scrollY, scrollbarHeight, y]);
+    scrollY.set((y.get() / -dragDistance) * scrollableHeight);
+  }, [dragDistance, scrollY, scrollableHeight, y]);
 
   // Animate page reorder
   React.useEffect(() => {
@@ -195,11 +202,20 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
         dragTransition={{
           power: 0.2,
           timeConstant: 120,
-          modifyTarget: snapTo
+          modifyTarget: value => {
+            const percentage = snapTo(value) / -dragDistance;
+            animate(scrollY, percentage * scrollableHeight, {
+              type: 'tween',
+              ease: 'easeInOut',
+              duration: 0.3
+            });
+
+            return snapTo(value);
+          }
         }}
         onDrag={(event, info) => {
-          const percentage = y.get() / -dragDistance;
-          scrollY.set(percentage * scrollbarHeight);
+          const percentage = clamp(0, 1, y.get() / -dragDistance);
+          scrollY.set(percentage * scrollableHeight);
         }}
         onWheel={event => {
           scrollToIndex(clamp(
@@ -251,7 +267,7 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
           bottom: 0,
           width: theme.spacing(2),
           borderLeft: '1px solid',
-          borderColor: theme.palette.grey[500],
+          borderColor: theme.palette.grey[700],
           boxSizing: 'content-box'
         }}
       >
@@ -264,6 +280,7 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
             const percentage = scrollY.get() / scrollbarHeight;
             y.set(percentage * -dragDistance);
           }}
+          transition={{ duration: 0.1 }}
           whileHover={{ backgroundColor: theme.palette.grey[500] }}
           whileTap={{ backgroundColor: theme.palette.grey[500] }}
           style={{
