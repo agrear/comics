@@ -123,6 +123,7 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
       } else {
         items.push(
           <NewPage
+            key="new-page"
             comicId={comic.id}
             top={i * itemDistance + padding}
             width={pageWidth}
