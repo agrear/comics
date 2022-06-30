@@ -1,4 +1,4 @@
-import CloseIcon from '@mui/icons-material/Close';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
@@ -35,11 +35,11 @@ export function ExplorerDialog({ open, comic, onClose }: ExplorerDialogProps) {
         sx={{
           position: 'absolute',
           top: theme => theme.spacing(1),
-          right: theme => theme.spacing(3),
+          left: theme => theme.spacing(1),
           zIndex: 1
         }}
       >
-        <CloseIcon />
+        <ArrowBackIcon />
       </IconButton>
 
       <Measure client>
