@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import { clamp, snap } from '@popmotion/popcorn';
 import {
@@ -60,7 +61,6 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
 
   const thumbHeight = parseInt(theme.spacing(6));
   const scrollbarHeight = (scrollbar?.current?.clientHeight ?? 0) - thumbHeight;
-  const scrollableHeight = scrollbarHeight - thumbHeight;
   const scrollY = useMotionValue<number>(0);
 
   const snapTo = snap(itemDistance);
@@ -80,9 +80,9 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
       animate(y, yEnd, { ...transition, onComplete });
 
       // Update scrollbar
-      const scrollYEnd = (yEnd / -dragDistance) * scrollableHeight;
+      const scrollYEnd = clamp(0, 1, yEnd / -dragDistance) * scrollbarHeight;
       animate(scrollY, scrollYEnd, transition);
-  }, [dragDistance, itemDistance, scrollableHeight, scrollY, y]);
+  }, [dragDistance, itemDistance, scrollbarHeight, scrollY, y]);
 
   const overscan = 1;
   const windowSize = Math.ceil(parentHeight / itemDistance) + overscan * 2;
@@ -159,8 +159,8 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
 
   // Update scrollbar position
   React.useEffect(() => {
-    scrollY.set((y.get() / -dragDistance) * scrollableHeight);
-  }, [dragDistance, scrollY, scrollableHeight, y]);
+    scrollY.set((y.get() / -dragDistance) * scrollbarHeight);
+  }, [dragDistance, scrollY, scrollbarHeight, y]);
 
   // Animate page reorder
   React.useEffect(() => {
@@ -194,7 +194,20 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
   }, [comic.id, comic.pages, dispatch, selectedIndex, windowSize]);
 
   return (
-    <>
+    <Box
+      onPointerDown={event => dragControls.start(event)}
+      onWheel={event => {
+        scrollToIndex(clamp(
+          0,
+          comic.pages.length,
+          Math.round(selectedIndex + event.deltaY / 100)
+        ));
+      }}
+      mx={{
+        display: 'flex',
+        height: '100%'
+      }}
+    >
       <motion.ul
         drag={navigation === 'viewPages' ? 'y' : false}
         dragControls={dragControls}
@@ -203,8 +216,8 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
           power: 0.2,
           timeConstant: 120,
           modifyTarget: value => {
-            const percentage = snapTo(value) / -dragDistance;
-            animate(scrollY, percentage * scrollableHeight, {
+            const percentage = clamp(0, 1, snapTo(value) / -dragDistance);
+            animate(scrollY, percentage * scrollbarHeight, {
               type: 'tween',
               ease: 'easeInOut',
               duration: 0.3
@@ -215,14 +228,7 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
         }}
         onDrag={(event, info) => {
           const percentage = clamp(0, 1, y.get() / -dragDistance);
-          scrollY.set(percentage * scrollableHeight);
-        }}
-        onWheel={event => {
-          scrollToIndex(clamp(
-            0,
-            comic.pages.length,
-            Math.round(selectedIndex + event.deltaY / 100)
-          ));
+          scrollY.set(percentage * scrollbarHeight);
         }}
         style={{
           position: 'relative',
@@ -301,7 +307,7 @@ export function Explorer({ comic, parentHeight, spacing = 4 }: ExplorerProps) {
       <SelectPageNumberDialog pageTotal={comic.pages.length} />
 
       <DeletePageDialog />
-    </>
+    </Box>
   );
 }
 
