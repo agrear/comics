@@ -1,7 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider as StoreProvider } from 'react-redux';
 import { MemoryRouter as Router } from 'react-router-dom';
 import 'typeface-roboto';
@@ -30,4 +30,6 @@ function Root() {
   );
 }
 
-ReactDOM.render(<Root />, document.getElementById('root'));
+const container = document.getElementById('root');
+const root = createRoot(container!);
+root.render(<Root />);

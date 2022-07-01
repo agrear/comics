@@ -100,7 +100,7 @@ function Placeholder({ isDragActive }: { isDragActive: boolean }) {
       }}
     >
       {isDragActive ? <GetAppIcon fontSize="large" /> : <ImageIcon fontSize="large" />}
-      
+
       <Typography align="center" sx={{ whiteSpace: 'pre-line' }}>
         {isDragActive ? 'Drop image here' : 'Click to browse or\ndrag image here'}
       </Typography>
@@ -121,7 +121,7 @@ export function ImagePicker({ label, ...props }: ImagePickerProps) {
     setIsMounting(false);
   }, []);
 
-  const onDrop = React.useCallback(acceptedFiles => {
+  const onDrop = React.useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     const reader = new FileReader();
 
@@ -142,7 +142,9 @@ export function ImagePicker({ label, ...props }: ImagePickerProps) {
   }, [helpers]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: "image/*",
+    accept: {
+      'image/*': ['.gif', '.jpeg', '.png']
+    },
     multiple: false,
     onDrop
   });
@@ -176,9 +178,9 @@ export function ImagePicker({ label, ...props }: ImagePickerProps) {
   return (
     <FormControl error={meta.touched && meta.error !== undefined} {...rootProps}>
       <Input inputProps={{...inputProps}} {...props} />
-      
+
       {field.value === null ? <Placeholder isDragActive={isDragActive} /> : null}
-      
+
       <AnimatePresence>
         <motion.img
           key={key}
@@ -195,10 +197,10 @@ export function ImagePicker({ label, ...props }: ImagePickerProps) {
             maxHeight: '100%'
           }}
         />
-        
+
         {field.value !== null && isDragActive ? <DropIndicator key="overlay" /> : null}
       </AnimatePresence>
-      
+
       {meta.touched && meta.error && (
         <FormHelperText>{meta.error}</FormHelperText>
       )}
